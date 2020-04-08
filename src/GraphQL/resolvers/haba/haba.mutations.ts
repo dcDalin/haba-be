@@ -159,8 +159,8 @@ export default {
 					earnings: transRes.toJSON(),
 				};
 
-				// Subscription on the user side,
-				// While on earnings case a new earning pops up
+				// Subscription on the logged in user side,
+				// While on earnings page case a new earning pops up
 				pubsub.publish(TRANSACTION_CHANGE, {
 					earnings_transactonChange: subRes,
 				});

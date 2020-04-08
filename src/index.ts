@@ -2,7 +2,6 @@ import "dotenv/config";
 import { createServer } from "http";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
-
 import bodyParser from "body-parser";
 import cors from "cors";
 import sequelize from "./db/connection";
@@ -10,7 +9,6 @@ import typeDefs from "./GraphQL/typeDefs";
 import resolvers from "./GraphQL/resolvers";
 import accessEnv from "./helpers/accessEnv";
 import mpesaRouter from "./routes/mpesa";
-import getUserId from "./utils/getUserId";
 const PORT = accessEnv("PORT");
 
 (async () => {
@@ -36,7 +34,11 @@ const PORT = accessEnv("PORT");
 			context: async ({ req, res, connection }) => {
 				if (connection) {
 					// check connection for metadata
-					console.log("Connection: ", connection.context);
+					console.log(
+						"Connection is: ",
+						connection.context.req.headers.authorization
+					);
+					console.log("Active Subscription is: ", connection.operationName);
 					return connection.context;
 				} else {
 					return { req, res };

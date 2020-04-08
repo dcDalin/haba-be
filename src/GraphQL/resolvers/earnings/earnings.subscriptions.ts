@@ -9,17 +9,9 @@ export default {
 			subscribe: withFilter(
 				() => pubsub.asyncIterator([TRANSACTION_CHANGE]),
 				(payload, _, context) => {
-					// Shape auth header as is required by checkAuth function
-					const authHeader = {
-						req: {
-							headers: {
-								authorization: context.Authorization,
-							},
-						},
-					};
-					const me = checkAuth(authHeader);
-
-					console.log("Me is: ", me);
+					// Context in this case comes from the front end
+					// initialized on the apollo server instance in the root of the project
+					const me = checkAuth(context);
 
 					return payload.earnings_transactonChange.id === me.id;
 				}

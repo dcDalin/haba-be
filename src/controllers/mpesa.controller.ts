@@ -6,6 +6,7 @@ import isReachable from "is-reachable";
 import request from "request";
 import User from "../models/user.model";
 import accessEnv from "../helpers/accessEnv";
+import mpesa from "../utils/mpesa";
 const APP_URL = accessEnv("APP_URL");
 const LIPA_NA_MPESA_ONLINE_PASSKEY = accessEnv("LIPA_NA_MPESA_ONLINE_PASSKEY");
 const LIPA_NA_MPESA_ONLINE_SHORT_CODE = accessEnv(
@@ -26,16 +27,16 @@ class MpesaController {
 				method: "POST",
 				url: endpoint,
 				headers: {
-					Authorization: `Bearer ${req.access_token}`
+					Authorization: `Bearer ${req.access_token}`,
 				},
 				json: {
 					ShortCode: SHORT_CODE,
 					ResponseType: "Cancelled",
 					ConfirmationURL: `${APP_URL}/pay/c2b/confirm`,
-					ValidationURL: `${APP_URL}/pay/c2b/validate`
-				}
+					ValidationURL: `${APP_URL}/pay/c2b/validate`,
+				},
 			},
-			function(error, _response, body) {
+			function (error, _response, body) {
 				if (error) {
 					res.json(error);
 				}
@@ -57,8 +58,8 @@ class MpesaController {
 					Amount: 10,
 					BillRefNumber: "testing",
 					Msisdn: "254715973838",
-					CommandID: "CustomerPayBillOnline"
-				}
+					CommandID: "CustomerPayBillOnline",
+				},
 			});
 			res.status(200).json(result.data);
 		} catch (error) {
@@ -75,7 +76,7 @@ class MpesaController {
 			amount,
 			name,
 			message,
-			isPrivate
+			isPrivate,
 		} = req.body;
 
 		// Check if stk works before allowing transactions
@@ -83,7 +84,6 @@ class MpesaController {
 		const callBackUrlWorks = await isReachable(`${APP_URL}/pay/stk-callback`);
 
 		if (!callBackUrlWorks) {
-			console.log("*********************");
 			console.log(`${APP_URL}/pay/stk-callback: is not reachable`);
 			return res.status(404).json({ msg: "Callback URL does not work" });
 		}
@@ -94,53 +94,50 @@ class MpesaController {
 			return res.status(404).json({ msg: "Username not found" });
 		}
 
-		console.log("User is: ", APP_URL);
-		console.log("User id is: ", user.id);
-
-		const endpoint =
-			"https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest";
-
-		const timestamp = moment().format("YYYYMMDDHHMMSS");
-
-		const lipaNaMpesaOnlineShortCode = LIPA_NA_MPESA_ONLINE_SHORT_CODE;
-		const lipaNaMpesaOnlinePassKey = LIPA_NA_MPESA_ONLINE_PASSKEY;
-		const password = new Buffer.from(
-			`${lipaNaMpesaOnlineShortCode}${lipaNaMpesaOnlinePassKey}${timestamp}`
-		).toString("base64");
-
+		// Encode message
 		const encodedMessage = encodeURI(message);
-		try {
-			console.log("Start try here");
-			const result = await axios({
-				method: "POST",
-				url: endpoint,
-				headers: { Authorization: `Bearer ${req.access_token}` },
-				data: {
-					BusinessShortCode: lipaNaMpesaOnlineShortCode,
-					Password: password,
-					Timestamp: timestamp,
-					TransactionType: "CustomerPayBillOnline",
-					Amount: amount,
-					PartyA: phoneNumber,
-					PartyB: lipaNaMpesaOnlineShortCode,
-					PhoneNumber: phoneNumber,
-					CallBackURL: `${APP_URL}/pay/stk-callback?phoneNumber=${phoneNumber}&userId=${user.id}&name=${name}&message=${encodedMessage}&isPrivate=${isPrivate}`,
-					AccountReference: payToUserName,
-					TransactionDesc: "I love your channel",
-					ResponseType: "Canceled"
-				}
+
+		mpesa
+			.lipaNaMpesaOnline({
+				BusinessShortCode: LIPA_NA_MPESA_ONLINE_SHORT_CODE,
+				Amount: amount,
+				PartyA: phoneNumber,
+				PartyB: LIPA_NA_MPESA_ONLINE_SHORT_CODE,
+				PhoneNumber: phoneNumber,
+				CallBackURL: `${APP_URL}/pay/stk-callback?phoneNumber=${phoneNumber}&userId=${user.id}&name=${name}&message=${encodedMessage}&isPrivate=${isPrivate}`,
+				AccountReference: payToUserName,
+				passKey: LIPA_NA_MPESA_ONLINE_PASSKEY,
+				TransactionType: "CustomerPayBillOnline",
+				TransactionDesc: "Haba",
+			})
+			.then((response) => {
+				return res.status(200).json({
+					msg: "Success, input MPesa pin",
+					response: response.ResponseCode,
+				});
+			})
+			.catch((error) => {
+				console.error(error);
+				return res
+					.status(400)
+					.json({ msg: "An unknown error occured", response: error });
 			});
-			res.status(200).json(result.data);
-		} catch (error) {
-			console.log("Error is: ", error);
-			res.status(401).json({ message: error });
-		}
 	}
 
 	static async stkCallback(req: any, res: any) {
 		console.log("Callback starting");
+		// Get values from url params
 		const { phoneNumber, userId, message, isPrivate } = req.query;
+
+		// for some reason, isPrivate is string
+		// We need to convert it to a boolean value
+		// otherwise our haba_newHaba mutation will fail
+		let value = isPrivate;
+		let fromIsPrivate = value === "true";
+
 		let { name } = req.query;
+
+		// Destructure ResultCode from Saf response
 		const { ResultCode } = req.body.Body.stkCallback;
 
 		// Decode the message from callback url query string
@@ -182,8 +179,8 @@ class MpesaController {
 				fromNumber: phoneNumber,
 				fromName: name,
 				fromMessage: decodedMessage,
-				fromIsPrivate: isPrivate,
-				fromAmount: Item[0].Value
+				fromIsPrivate,
+				fromAmount: Item[0].Value,
 			};
 
 			console.log("Got near request");

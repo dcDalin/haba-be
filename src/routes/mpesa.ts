@@ -19,12 +19,15 @@ mpesaRouter.post("/c2b/validate", (req, res) => {
 
 mpesaRouter.get("/simulate", genToken, mpesaController.simulate);
 
-mpesaRouter.post("/stk-pay", genToken, mpesaController.stkPay);
+// STK Pay url, initiates the payment procedure
+mpesaRouter.post("/stk-pay", mpesaController.stkPay);
 
+// For testing if callback url works
 mpesaRouter.get("/stk-callback", (_req, res) => {
 	res.send("Working");
 });
 
+// Callback url, contains mutation that fills in admin and transaction stuff
 mpesaRouter.post("/stk-callback", mpesaController.stkCallback);
 
 export default mpesaRouter;
