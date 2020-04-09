@@ -70,11 +70,6 @@ export default {
 					transaction: t,
 				});
 
-				// Check if balance exists from previous update
-				if (!userBalance[0][0].balance) {
-					console.error("error");
-				}
-
 				// Create new user transaction
 				const transRes = await UserTransaction.create(
 					{
@@ -147,7 +142,7 @@ export default {
 
 				await t.commit();
 
-				const updatedUser = await User.findByPk(userId);
+				const updatedUser: any = await User.findByPk(userId);
 
 				const { id, netIncome, withdrawn, balance } = updatedUser;
 
@@ -172,6 +167,7 @@ export default {
 				return res.toJSON();
 			} catch (err) {
 				console.log("Err is: ", err);
+				return err;
 			}
 		},
 	},
