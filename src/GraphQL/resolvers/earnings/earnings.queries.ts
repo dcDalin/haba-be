@@ -16,7 +16,7 @@ export default {
 			// Get user id from decoded token
 			const userId = me.id;
 
-			const user = await User.findByPk(userId);
+			const user: any = await User.findByPk(userId);
 
 			const cursorOptions = cursor
 				? {
@@ -42,7 +42,7 @@ export default {
 
 			// array does not exist, is not an array, or is empty
 			// ⇒ do not attempt to process array
-			if (!Array.isArray(transactions) || !transactions.length) {
+			if ((user && !Array.isArray(transactions)) || !transactions.length) {
 				return {
 					hasNextPage: null,
 					endCursor: null,
