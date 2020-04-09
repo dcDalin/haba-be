@@ -111,16 +111,19 @@ class MpesaController {
 				TransactionDesc: "Haba",
 			})
 			.then((response) => {
-				return res.status(200).json({
-					msg: "Success, input MPesa pin",
-					response: response.ResponseCode,
-				});
+				if (response.ResultCode === 0) {
+					return res.status(200).json({
+						msg: "Success, input MPesa pin",
+					});
+				} else {
+					return res.status(200).json({
+						msg: "Sorry, something went wrong. Please try again.",
+					});
+				}
 			})
 			.catch((error) => {
 				console.error(error);
-				return res
-					.status(400)
-					.json({ msg: "An unknown error occured", response: error });
+				return res.status(400).json({ msg: "An unknown error occured" });
 			});
 	}
 

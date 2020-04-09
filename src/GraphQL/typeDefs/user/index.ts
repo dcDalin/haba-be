@@ -24,6 +24,7 @@ export default gql`
 		userName: String
 		displayName: String
 		email: String
+		bio: String
 	}
 
 	type UserProfileConnection {
