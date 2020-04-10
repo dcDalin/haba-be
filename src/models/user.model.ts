@@ -43,12 +43,15 @@ export class User extends Model<User> {
 	@Column({
 		allowNull: true,
 		type: DataType.STRING,
+		defaultValue: "Hey, go ahead and Haba on my account.",
 	})
 	bio!: string;
 
 	@Column({
 		allowNull: true,
 		type: DataType.STRING,
+		defaultValue:
+			"https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
 	})
 	profileUrl!: string;
 
