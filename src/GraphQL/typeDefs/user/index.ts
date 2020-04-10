@@ -5,7 +5,7 @@ export default gql`
 		user_allUsers: [User]
 		user_searchUserName(userName: String!): [User]
 		user_userNameExists(userName: String!): Boolean
-		user_userEmailExists(email: String!): Boolean
+		user_userPhoneNumberExists(phoneNumber: String!): Boolean
 		user_me: User!
 		user_profile(
 			userName: String!
@@ -23,7 +23,7 @@ export default gql`
 		id: ID
 		userName: String
 		displayName: String
-		email: String
+		phoneNumber: String
 		bio: String
 	}
 
@@ -38,7 +38,7 @@ export default gql`
 		id: ID
 		userName: String
 		displayName: String
-		email: String
+		phoneNumber: String
 		bio: String
 	}
 
@@ -54,12 +54,12 @@ export default gql`
 
 	input UserSignUpInput {
 		userName: String!
-		email: String!
+		phoneNumber: String!
 		password: String!
 	}
 
 	input UserSignInInput {
-		email: String!
+		phoneNumber: String!
 		password: String!
 	}
 

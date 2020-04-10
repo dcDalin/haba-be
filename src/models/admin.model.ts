@@ -10,20 +10,13 @@ export class Admin extends Model<Admin> {
 		primaryKey: true,
 		type: DataType.STRING,
 	})
-	email!: string;
+	phoneNumber!: string;
 
 	@Column({
 		allowNull: false,
 		type: DataType.STRING,
 	})
 	name!: string;
-
-	@Column({
-		allowNull: true,
-		type: DataType.STRING,
-		unique: true,
-	})
-	phoneNumber!: string;
 
 	@Column({
 		allowNull: true,

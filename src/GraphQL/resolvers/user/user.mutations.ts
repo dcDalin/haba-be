@@ -7,14 +7,14 @@ import validateUserSignUp from "./validateUserSignUp";
 interface UserSignUpInput {
 	userSignUpInput: {
 		userName: string;
-		email: string;
+		phoneNumber: string;
 		password: string;
 	};
 }
 
 interface UserSignInInput {
 	userSignInInput: {
-		email: string;
+		phoneNumber: string;
 		password: string;
 	};
 }
@@ -23,25 +23,29 @@ export default {
 	Mutation: {
 		async user_signUp(
 			_: null,
-			{ userSignUpInput: { userName, email, password } }: UserSignUpInput
+			{ userSignUpInput: { userName, phoneNumber, password } }: UserSignUpInput
 		) {
 			// Validate user input
-			const { valid, errors } = validateUserSignUp(userName, email, password);
+			const { valid, errors } = validateUserSignUp(
+				userName,
+				phoneNumber,
+				password
+			);
 			if (!valid) {
 				throw new UserInputError("Errors", { errors });
 			}
 
-			// Make sure email doesn't exist
+			// Make sure phoneNumber doesn't exist
 			// Front end checks this as well but you can never be too sure :)
 			// Mongo unique does the same :D
-			const userEmail = await User.findOne({
-				where: { email: email.toLowerCase() },
+			const userPhoneNumber = await User.findOne({
+				where: { phoneNumber },
 			});
 
-			if (userEmail) {
-				throw new UserInputError("Email exists", {
+			if (userPhoneNumber) {
+				throw new UserInputError("Phone number exists", {
 					errors: {
-						email: "Email already exists",
+						phoneNumber: "Phone number already exists",
 					},
 				});
 			}
@@ -64,7 +68,7 @@ export default {
 			// Save to DB
 			const res = await User.create({
 				userName: userName.toLowerCase(),
-				email: email.toLowerCase(),
+				phoneNumber,
 				password: hashedPassword,
 			});
 
@@ -77,31 +81,24 @@ export default {
 		},
 		async user_signIn(
 			_: null,
-			{ userSignInInput: { email, password } }: UserSignInInput
+			{ userSignInInput: { phoneNumber, password } }: UserSignInInput
 		) {
 			const user = await User.findOne({
-				where: { email: email.toLowerCase() },
+				where: { phoneNumber },
 			});
 
 			const errors: any = {};
 
 			if (!user) {
 				errors.general = "User not found";
-				throw new UserInputError("Wrong email and or password");
-			}
-
-			if (!user.password) {
-				errors.general = "Password not set";
-				throw new UserInputError(
-					"Please reset your password by clicking 'Forgot Password'"
-				);
+				throw new UserInputError("Wrong phone number and or password");
 			}
 
 			const match = await bcrypt.compare(password, user.password);
 
 			if (!match) {
 				errors.general = "User not found";
-				throw new UserInputError("Wrong email and or password");
+				throw new UserInputError("Wrong phone number and or password");
 			}
 
 			const token = generateToken(user.toJSON());

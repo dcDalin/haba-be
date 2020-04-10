@@ -49,14 +49,11 @@ export default {
 			}
 			return false;
 		},
-		async user_userEmailExists(_: null, { email }: any) {
-			// Lowercase email
-			const lowercasedEmail = email.toLowerCase();
-
-			const userEmail = await User.findOne({
-				where: { email: lowercasedEmail },
+		async user_userPhoneNumberExists(_: null, { phoneNumber }: any) {
+			const userPhoneNumber = await User.findOne({
+				where: { phoneNumber },
 			});
-			if (userEmail) {
+			if (userPhoneNumber) {
 				return true;
 			}
 			return false;

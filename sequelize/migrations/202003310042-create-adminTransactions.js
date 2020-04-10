@@ -6,43 +6,43 @@ module.exports.up = (queryInterface, DataTypes) => {
 				allowNull: false,
 				autoIncrement: true,
 				primaryKey: true,
-				type: DataTypes.INTEGER
+				type: DataTypes.INTEGER,
 			},
-			adminEmail: {
+			adminPhoneNumber: {
 				allowNull: false,
 				references: {
-					key: "email",
-					model: "admins"
+					key: "phoneNumber",
+					model: "admins",
 				},
-				type: DataTypes.STRING
+				type: DataTypes.STRING,
 			},
 			amount: {
 				allowNull: false,
-				type: DataTypes.FLOAT
+				type: DataTypes.FLOAT,
 			},
 			transactionType: {
 				allowNull: false,
-				type: DataTypes.ENUM("SERVICE FEE", "WITHDRAW")
+				type: DataTypes.ENUM("SERVICE FEE", "WITHDRAW"),
 			},
 			balance: {
 				allowNull: false,
-				type: DataTypes.FLOAT
+				type: DataTypes.FLOAT,
 			},
 			createdAt: {
 				allowNull: false,
-				type: DataTypes.DATE
+				type: DataTypes.DATE,
 			},
 			updatedAt: {
 				allowNull: false,
-				type: DataTypes.DATE
+				type: DataTypes.DATE,
 			},
 			deletedAt: {
 				allowNull: true,
-				type: DataTypes.DATE
-			}
+				type: DataTypes.DATE,
+			},
 		},
 		{
-			charset: "utf8"
+			charset: "utf8",
 		}
 	);
 };

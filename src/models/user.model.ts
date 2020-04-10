@@ -28,13 +28,6 @@ export class User extends Model<User> {
 	displayName!: string;
 
 	@Column({
-		allowNull: false,
-		type: DataType.STRING,
-		unique: true,
-	})
-	email!: string;
-
-	@Column({
 		allowNull: true,
 		type: DataType.STRING,
 		unique: true,
