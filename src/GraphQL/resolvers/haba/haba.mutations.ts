@@ -44,8 +44,8 @@ export default {
 				const amountUserReceived = 0.9 * amountReceived;
 				const amountCompanyReceived = 0.1 * amountReceived;
 
-				const adminOneEmail = "mcdalinoluoch@gmail.com";
-				const adminTwoEmail = "benardo016@gmail.com";
+				const adminOnePhoneNumber = "254715973838";
+				const adminTwoPhoneNumber = "254728600789";
 
 				const adminOnceCut = 0.8 * amountCompanyReceived;
 				const adminTwoCut = 0.2 * amountCompanyReceived;
@@ -86,7 +86,7 @@ export default {
 				const adminOne = await Admin.increment("balance", {
 					by: adminOnceCut,
 					where: {
-						email: adminOneEmail,
+						phoneNumber: adminOnePhoneNumber,
 					},
 					returning: true,
 					plain: true,
@@ -97,7 +97,7 @@ export default {
 				await Admin.increment("netIncome", {
 					by: adminOnceCut,
 					where: {
-						email: adminOneEmail,
+						phoneNumber: adminOnePhoneNumber,
 					},
 
 					transaction: t,
@@ -107,7 +107,7 @@ export default {
 				const adminTwo = await Admin.increment("balance", {
 					by: adminTwoCut,
 					where: {
-						email: adminTwoEmail,
+						phoneNumber: adminTwoPhoneNumber,
 					},
 					returning: true,
 					plain: true,
@@ -118,7 +118,7 @@ export default {
 				await Admin.increment("netIncome", {
 					by: adminTwoCut,
 					where: {
-						email: adminTwoEmail,
+						phoneNumber: adminTwoPhoneNumber,
 					},
 
 					transaction: t,
@@ -127,14 +127,14 @@ export default {
 				// Create new admin transaction
 				// Transaction runs two queries for both admins
 				await AdminTransaction.create({
-					adminEmail: adminOneEmail,
+					adminPhoneNumber: adminOnePhoneNumber,
 					amount: adminOnceCut,
 					transactionType: "SERVICE FEE",
 					balance: adminOne[0][0].balance,
 				});
 
 				await AdminTransaction.create({
-					adminEmail: adminTwoEmail,
+					adminPhoneNumber: adminTwoPhoneNumber,
 					amount: adminTwoCut,
 					transactionType: "SERVICE FEE",
 					balance: adminTwo[0][0].balance,

@@ -1,6 +1,6 @@
 const validateSignup = (
 	userName: string,
-	email: string,
+	phoneNumber: string,
 	password: string
 ): any => {
 	const errors: any = {};
@@ -13,13 +13,13 @@ const validateSignup = (
 		errors.userName = "Username should be less than 30 character";
 	}
 
-	// Email validations
-	const emailRegEx = /\S+@\S+\.\S+/;
+	// Phone number validations
+	const phoneRegEx = /^254/i;
 
-	if (email.trim() === "") {
-		errors.email = "Email is required";
-	} else if (!email.trim().match(emailRegEx)) {
-		errors.email = "Invalid Email Address";
+	if (phoneNumber.trim() === "") {
+		errors.phoneNumber = "Phone number is required";
+	} else if (!phoneNumber.trim().match(phoneRegEx)) {
+		errors.phoneNumber = "Phone number must start with 254";
 	}
 
 	// Password validations
@@ -33,7 +33,7 @@ const validateSignup = (
 
 	return {
 		errors,
-		valid: Object.keys(errors).length < 1
+		valid: Object.keys(errors).length < 1,
 	};
 };
 
