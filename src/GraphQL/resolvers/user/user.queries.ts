@@ -58,6 +58,38 @@ export default {
       }
       return false;
     },
+    async user_allowChangeUserName(
+      _: null,
+      { newUserName, originalUserName }: any
+    ) {
+      const allowChange = await User.findOne({
+        where: { userName: newUserName },
+      });
+      // Check if original userName is equivalent to new username
+      if (allowChange) {
+        if (allowChange.userName === originalUserName) {
+          return false;
+        }
+        return true;
+      }
+      return false;
+    },
+    async user_allowChangePhoneNumber(
+      _: null,
+      { newPhoneNumber, originalPhoneNumber }: any
+    ) {
+      const allowChange = await User.findOne({
+        where: { phoneNumber: newPhoneNumber },
+      });
+      // Check if original PhoneNumber is equivalent to new PhoneNumber
+      if (allowChange) {
+        if (allowChange.phoneNumber === originalPhoneNumber) {
+          return false;
+        }
+        return true;
+      }
+      return false;
+    },
     user_me: (_: null, _args: null, context: any) => {
       const me = checkAuth(context);
       return User.findByPk(me.id);
