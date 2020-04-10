@@ -40,9 +40,25 @@ export default {
 					{ transaction: t }
 				);
 
+				// Don't
+				// Touch
+				// This
+				// Code
+				// *********************************************************
 				const amountReceived = fromAmount;
 				const amountUserReceived = 0.9 * amountReceived;
 				const amountCompanyReceived = 0.1 * amountReceived;
+				// *********************************************************
+				// Don't
+				// Touch
+				// This
+				// Code
+
+				// Sanity check, case the rates are off!
+				// Got to add up to 100%
+				if (amountUserReceived + amountCompanyReceived !== 100) {
+					throw "error";
+				}
 
 				const adminOnePhoneNumber = "254715973838";
 				const adminTwoPhoneNumber = "254728600789";
@@ -50,23 +66,12 @@ export default {
 				const adminOnceCut = 0.8 * amountCompanyReceived;
 				const adminTwoCut = 0.2 * amountCompanyReceived;
 
-				// Update balance on user table
-				const userBalance = await User.increment("balance", {
-					by: amountUserReceived,
-					where: {
-						id: userId,
-					},
-					returning: true, // to get updated data back
-					plain: true,
-					transaction: t,
-				});
+				// Fetch user
+				const userBal: any = await User.findByPk(userId);
 
-				// Update net Income on user table
-				await User.increment("netIncome", {
+				// Update balance and netIncome on the user above
+				userBal.increment(["balance", "netIncome"], {
 					by: amountUserReceived,
-					where: {
-						id: userId,
-					},
 					transaction: t,
 				});
 
@@ -77,68 +82,48 @@ export default {
 						amount: amountUserReceived,
 						serviceFee: amountCompanyReceived,
 						transactionType: "HABA",
-						balance: userBalance[0][0].balance,
+						balance: userBal.balance + amountUserReceived,
 					},
 					{ transaction: t }
 				);
 
-				// Update balance on admin one
-				const adminOne = await Admin.increment("balance", {
+				// Fetch admin one -> DC -> phoneNumber is the pk
+				const adminOneBal: any = await Admin.findByPk(adminOnePhoneNumber);
+
+				// Update balance and netIncome on the admin one -> DC -> adminOneCut
+				adminOneBal.increment(["balance", "netIncome"], {
 					by: adminOnceCut,
-					where: {
-						phoneNumber: adminOnePhoneNumber,
-					},
-					returning: true,
-					plain: true,
 					transaction: t,
 				});
 
-				// Update net income on admin one
-				await Admin.increment("netIncome", {
-					by: adminOnceCut,
-					where: {
-						phoneNumber: adminOnePhoneNumber,
-					},
+				// Fetch admin two -> Odizo
+				const adminTwoBal: any = await Admin.findByPk(adminTwoPhoneNumber);
 
-					transaction: t,
-				});
-
-				// Update balance on admin two
-				const adminTwo = await Admin.increment("balance", {
+				// Update balance and netIncome on the admin two -> Odizo -> adminTwoCut
+				adminTwoBal.increment(["balance", "netIncome"], {
 					by: adminTwoCut,
-					where: {
-						phoneNumber: adminTwoPhoneNumber,
-					},
-					returning: true,
-					plain: true,
-					transaction: t,
-				});
-
-				// Update net income on admin two
-				await Admin.increment("netIncome", {
-					by: adminTwoCut,
-					where: {
-						phoneNumber: adminTwoPhoneNumber,
-					},
-
 					transaction: t,
 				});
 
 				// Create new admin transaction
-				// Transaction runs two queries for both admins
-				await AdminTransaction.create({
-					adminPhoneNumber: adminOnePhoneNumber,
-					amount: adminOnceCut,
-					transactionType: "SERVICE FEE",
-					balance: adminOne[0][0].balance,
-				});
-
-				await AdminTransaction.create({
-					adminPhoneNumber: adminTwoPhoneNumber,
-					amount: adminTwoCut,
-					transactionType: "SERVICE FEE",
-					balance: adminTwo[0][0].balance,
-				});
+				// For both admins
+				await AdminTransaction.bulkCreate(
+					[
+						{
+							adminPhoneNumber: adminOnePhoneNumber,
+							amount: adminOnceCut,
+							transactionType: "SERVICE FEE",
+							balance: adminOneBal.balance + adminOnceCut,
+						},
+						{
+							adminPhoneNumber: adminTwoPhoneNumber,
+							amount: adminTwoCut,
+							transactionType: "SERVICE FEE",
+							balance: adminTwoBal.balance + adminTwoCut,
+						},
+					],
+					{ transaction: t }
+				);
 
 				await t.commit();
 
