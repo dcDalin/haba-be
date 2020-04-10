@@ -1,6 +1,5 @@
 import { Response } from "express";
 import axios from "axios";
-import moment from "moment";
 import { request as gRequest } from "graphql-request";
 import isReachable from "is-reachable";
 import request from "request";
