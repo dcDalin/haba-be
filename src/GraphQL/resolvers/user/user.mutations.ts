@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import User from '../../../models/user.model';
 import { generateToken } from '../../../utils/generateToken';
 import validateUserSignUp from './validateUserSignUp';
+import checkAuth from '../../../utils/checkAuth';
 
 interface UserSignUpInput {
   userSignUpInput: {
@@ -106,6 +107,30 @@ export default {
       return {
         token,
       };
+    },
+    async user_updateProfile(
+      _: null,
+      { userUpdateInput: { phoneNumberNew, bio, userName, displayName } }: any,
+      context: any
+    ) {
+      const me = checkAuth(context);
+
+      // Get user id from decoded token
+      const userId = me.id;
+
+      try {
+        const res = await User.update(
+          { phoneNumberNew, bio, userName, displayName },
+          { where: { id: userId } }
+        );
+        if (res) {
+          return true;
+        }
+        return false;
+      } catch (err) {
+        console.log('Err is: ', err);
+        return false;
+      }
     },
   },
 };

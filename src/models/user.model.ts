@@ -42,7 +42,7 @@ export class User extends Model<User> {
 
   @Column({
     allowNull: true,
-    type: DataType.STRING,
+    type: DataType.TEXT,
     defaultValue: 'Hey, go ahead and Haba on my account.',
   })
   bio!: string;

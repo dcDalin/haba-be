@@ -6,6 +6,14 @@ export default gql`
     user_searchUserName(userName: String!): [User]
     user_userNameExists(userName: String!): Boolean
     user_userPhoneNumberExists(phoneNumber: String!): Boolean
+    user_allowChangeUserName(
+      newUserName: String!
+      originalUserName: String!
+    ): Boolean
+    user_allowChangePhoneNumber(
+      newPhoneNumber: String!
+      originalPhoneNumber: String!
+    ): Boolean
     user_me: User!
     user_profile(
       userName: String!
@@ -17,6 +25,7 @@ export default gql`
   extend type Mutation {
     user_signUp(userSignUpInput: UserSignUpInput): UserAuthResponse!
     user_signIn(userSignInInput: UserSignInInput): UserAuthResponse!
+    user_updateProfile(userUpdateInput: UserUpdateInput): Boolean
   }
 
   type User {
@@ -41,6 +50,13 @@ export default gql`
     displayName: String
     phoneNumber: String
     bio: String
+  }
+
+  input UserUpdateInput {
+    phoneNumberNew: String!
+    bio: String!
+    userName: String!
+    displayName: String!
   }
 
   type UserProfileHaba {
