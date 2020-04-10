@@ -24,6 +24,7 @@ export default gql`
 		userName: String
 		displayName: String
 		phoneNumber: String
+		profileUrl: String
 		bio: String
 	}
 
