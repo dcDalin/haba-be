@@ -13,8 +13,17 @@
 		"dev": "ts-node-dev --respawn src/index.ts",
 		"clean": "rm -rf dist",
 		"build": "npm run clean && tsc",
-		"start": "npm run build && node ./dist/index.js"
+		"start": "npm run build && node ./dist/index.js",
+		"tslint": "tslint --project tsconfig.json",
+		"prettier:base": "prettier --parser typescript --single-quote",
+		"prettier:check": "npm run prettier:base -- --list-different \"src/**/*.{ts,tsx}\"",
+		"prettier:write": "npm run prettier:base -- --write \"src/**/*.{ts,tsx}\""
 	},
+	"husky": {
+    "hooks": {
+      "pre-commit": "npm run prettier:write"
+    }
+ },
 	"repository": "https://github.com/dcDalin/holby-ql",
 	"author": "dcDalin <mcdalinoluoch@gmail.com>",
 	"license": "MIT",
@@ -31,8 +40,13 @@
 		"@types/request": "^2.48.4",
 		"@types/shortid": "^0.0.29",
 		"@types/validator": "^13.0.0",
+		"husky": "^4.2.5",
+		"prettier": "^2.0.4",
 		"ts-node": "8.5.2",
 		"ts-node-dev": "^1.0.0-pre.44",
+		"tslint": "^6.1.1",
+		"tslint-config-airbnb": "^5.11.2",
+		"tslint-config-prettier": "^1.18.0",
 		"typescript": "3.7.2"
 	},
 	"dependencies": {
