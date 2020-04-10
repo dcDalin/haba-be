@@ -1,2 +1,2 @@
-export const NEW_HABA = "NEW_HABA";
-export const TRANSACTION_CHANGE = "TRANSACTION_CHANGE";
+export const NEW_HABA = 'NEW_HABA';
+export const TRANSACTION_CHANGE = 'TRANSACTION_CHANGE';
