@@ -121,8 +121,14 @@ export default {
       const userId = me.id;
 
       try {
+        // Lowercase userName, otherwise it will cause an error
         const res = await User.update(
-          { phoneNumberNew, bio, userName, displayName },
+          {
+            phoneNumber: phoneNumberNew,
+            bio,
+            userName: userName.toLowerCase(),
+            displayName,
+          },
           { where: { id: userId } }
         );
         if (res) {
