@@ -82,5 +82,6 @@ export default gql`
 
   type UserAuthResponse {
     token: String!
+    userName: String!
   }
 `;
