@@ -78,6 +78,7 @@ export default {
 
       return {
         token,
+        userName,
       };
     },
     async user_signIn(
@@ -106,6 +107,7 @@ export default {
 
       return {
         token,
+        userName: user.userName,
       };
     },
     async user_updateProfile(
