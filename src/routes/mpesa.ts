@@ -12,10 +12,7 @@ mpesaRouter.get('/stkcallback', (_req, res) => {
 mpesaRouter.get('/stkpay', mpesaController.stkPay);
 
 // Callback url, contains mutation that fills in admin and transaction stuff
-mpesaRouter.post('/stkcallback', (req, res) => {
-  console.log(req);
-  console.log(res);
-});
+mpesaRouter.post('/stkcallback', mpesaController.stkCallback);
 
 mpesaRouter.post('/stkstatus', mpesaController.stkStatus);
 

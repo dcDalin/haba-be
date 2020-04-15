@@ -73,11 +73,10 @@ class MpesaController {
       }
     } catch (error) {
       console.log('Error is: ', error);
-      const { errorMessage } = error.response.data;
 
       return res.status(400).json({
         status: 'error',
-        msg: errorMessage,
+        msg: 'An unknown error occured, please try again later',
       });
     }
   }
