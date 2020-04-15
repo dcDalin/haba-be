@@ -55,8 +55,8 @@ export default {
         // Code
 
         // Sanity check, case the rates are off!
-        // Got to add up to 100%
-        if (amountUserReceived + amountCompanyReceived !== 100) {
+        // Got to add up to amount received
+        if (amountUserReceived + amountCompanyReceived !== amountReceived) {
           throw 'error';
         }
 
