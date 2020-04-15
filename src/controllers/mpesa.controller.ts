@@ -1,72 +1,11 @@
-import { Response } from 'express';
-import axios from 'axios';
 import { request as gRequest } from 'graphql-request';
 import isReachable from 'is-reachable';
-import request from 'request';
 import User from '../models/user.model';
 import accessEnv from '../helpers/accessEnv';
 import mpesa from '../utils/mpesa';
 const APP_URL = accessEnv('APP_URL');
-const LIPA_NA_MPESA_ONLINE_PASSKEY = accessEnv('LIPA_NA_MPESA_ONLINE_PASSKEY');
-const LIPA_NA_MPESA_ONLINE_SHORT_CODE = accessEnv(
-  'LIPA_NA_MPESA_ONLINE_SHORT_CODE'
-);
-const SHORT_CODE = accessEnv('SHORT_CODE');
 
 class MpesaController {
-  static async getToken(req: any, res: any) {
-    res.status(200).json({ message: req.access_token });
-  }
-
-  static async registerURL(req: any, res: Response) {
-    const endpoint = 'https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl';
-
-    request(
-      {
-        method: 'POST',
-        url: endpoint,
-        headers: {
-          Authorization: `Bearer ${req.access_token}`,
-        },
-        json: {
-          ShortCode: SHORT_CODE,
-          ResponseType: 'Cancelled',
-          ConfirmationURL: `${APP_URL}/pay/c2b/confirm`,
-          ValidationURL: `${APP_URL}/pay/c2b/validate`,
-        },
-      },
-      function (error, _response, body) {
-        if (error) {
-          res.json(error);
-        }
-        res.status(200).json(body);
-      }
-    );
-  }
-
-  static async simulate(req: any, res: any) {
-    const endpoint = 'https://sandbox.safaricom.co.ke/mpesa/c2b/v1/simulate';
-
-    try {
-      const result = await axios({
-        method: 'POST',
-        url: endpoint,
-        headers: { Authorization: `Bearer ${req.access_token}` },
-        data: {
-          ShortCode: '600326',
-          Amount: 10,
-          BillRefNumber: 'testing',
-          Msisdn: '254715973838',
-          CommandID: 'CustomerPayBillOnline',
-        },
-      });
-      res.status(200).json(result.data);
-    } catch (error) {
-      console.log('Error is: ', error);
-      res.status(401).json({ message: error });
-    }
-  }
-
   static async stkPay(req: any, res: any) {
     // TODO: Valdiate input
     const {
@@ -80,10 +19,10 @@ class MpesaController {
 
     // Check if stk works before allowing transactions
     // STK has no way of cancelling case callback don't work
-    const callBackUrlWorks = await isReachable(`${APP_URL}/pay/stk-callback`);
+    const callBackUrlWorks = await isReachable(`${APP_URL}/pay/stkcallback`);
 
     if (!callBackUrlWorks) {
-      console.log(`${APP_URL}/pay/stk-callback: is not reachable`);
+      console.log(`${APP_URL}/pay/stkcallback: is not reachable`);
       return res.status(404).json({ msg: 'Callback URL does not work' });
     }
 
@@ -96,34 +35,50 @@ class MpesaController {
     // Encode message
     const encodedMessage = encodeURI(message);
 
-    mpesa
-      .lipaNaMpesaOnline({
-        BusinessShortCode: LIPA_NA_MPESA_ONLINE_SHORT_CODE,
-        Amount: amount,
-        PartyA: phoneNumber,
-        PartyB: LIPA_NA_MPESA_ONLINE_SHORT_CODE,
-        PhoneNumber: phoneNumber,
-        CallBackURL: `${APP_URL}/pay/stk-callback?phoneNumber=${phoneNumber}&userId=${user.id}&name=${name}&message=${encodedMessage}&isPrivate=${isPrivate}`,
-        AccountReference: payToUserName,
-        passKey: LIPA_NA_MPESA_ONLINE_PASSKEY,
-        TransactionType: 'CustomerPayBillOnline',
-        TransactionDesc: 'Haba',
-      })
-      .then((response) => {
-        if (response.ResultCode === 0) {
+    const callbackUrl = `${APP_URL}/pay/stkcallback?phoneNumber=${phoneNumber}&userId=${user.id}&name=${name}&message=${encodedMessage}&isPrivate=${isPrivate}`;
+
+    const transactionDesc = 'HABA';
+
+    const transactionType = 'CustomerPayBillOnline';
+    try {
+      console.log(callbackUrl);
+
+      const response = await mpesa.lipaNaMpesaOnline(
+        phoneNumber,
+        amount,
+        callbackUrl,
+        payToUserName,
+        transactionDesc,
+        transactionType
+      );
+      console.log(callbackUrl);
+      if (response) {
+        console.log('Response: ', response.data);
+        const { ResponseCode, CustomerMessage } = response.data;
+        if (ResponseCode === '0') {
           return res.status(200).json({
-            msg: 'Success, input MPesa pin',
+            status: 'success',
+            msg: CustomerMessage,
+            data: response.data,
           });
         } else {
-          return res.status(200).json({
-            msg: 'Sorry, something went wrong. Please try again.',
-          });
+          return res
+            .status(400)
+            .json({ status: 'error', msg: CustomerMessage });
         }
-      })
-      .catch((error) => {
-        console.error(error);
-        return res.status(400).json({ msg: 'An unknown error occured' });
+      } else {
+        return res
+          .status(400)
+          .json({ status: 'error', msg: 'An error occured, please try again' });
+      }
+    } catch (error) {
+      console.log('Error is: ', error);
+
+      return res.status(400).json({
+        status: 'error',
+        msg: 'An unknown error occured, please try again later',
       });
+    }
   }
 
   static async stkCallback(req: any, res: any) {
@@ -200,28 +155,23 @@ class MpesaController {
         .status(200)
         .json({ code: ResultCode, message: req.body.Body.stkCallback });
     }
-    /**
-		 {
-				MerchantRequestID: '1998-22770637-1',
-				CheckoutRequestID: 'ws_CO_080320200845172154',
-				ResultCode: 1031,
-				ResultDesc: 'Request cancelled by user'
-			}
-			{
-  MerchantRequestID: '11614-1471978-1',
-  CheckoutRequestID: 'ws_CO_090320201600180986',
-  ResultCode: 26,
-  ResultDesc: 'System busy. The service request is rejected.'
-} 
-			{
-				MerchantRequestID: '14671-4716794-1',
-				CheckoutRequestID: 'ws_CO_080320200845525939',
-				ResultCode: 0,
-				ResultDesc: 'The service request is processed successfully.',
-				CallbackMetadata: { Item: [ [Object], [Object], [Object], [Object] ] }
-			}
-		 * 
-		 */
+  }
+  static async stkStatus(req: any, res: any) {
+    const { checkoutRequestId } = req.body;
+    try {
+      const response = await mpesa.lipaNaMpesaQuery(checkoutRequestId);
+      if (response) {
+        const { ResultDesc } = response.data;
+        console.log('Response is: ', response);
+        res.status(200).json({ status: 'success', msg: ResultDesc });
+      } else {
+        res.status(400).json({ status: 'error', msg: 'something went wrong' });
+      }
+    } catch (err) {
+      console.log('Err is: ', err);
+      const { errorMessage } = err.response.data;
+      res.status(400).json({ status: 'error', msg: errorMessage });
+    }
   }
 }
 
