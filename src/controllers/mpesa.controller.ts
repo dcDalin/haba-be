@@ -53,7 +53,6 @@ class MpesaController {
       );
       console.log(callbackUrl);
       if (response) {
-        console.log('Response: ', response.data);
         const { ResponseCode, CustomerMessage } = response.data;
         if (ResponseCode === '0') {
           return res.status(200).json({
@@ -62,11 +61,14 @@ class MpesaController {
             data: response.data,
           });
         } else {
+          console.error('ERROR');
+          console.error(CustomerMessage);
           return res
             .status(400)
             .json({ status: 'error', msg: CustomerMessage });
         }
       } else {
+        console.error('Error');
         return res
           .status(400)
           .json({ status: 'error', msg: 'An error occured, please try again' });

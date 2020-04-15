@@ -9,7 +9,7 @@ mpesaRouter.get('/stkcallback', (_req, res) => {
 });
 
 // STK Pay url, initiates the payment procedure
-mpesaRouter.get('/stkpay', mpesaController.stkPay);
+mpesaRouter.post('/stkpay', mpesaController.stkPay);
 
 // Callback url, contains mutation that fills in admin and transaction stuff
 mpesaRouter.post('/stkcallback', mpesaController.stkCallback);
