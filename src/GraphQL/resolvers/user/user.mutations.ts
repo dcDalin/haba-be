@@ -1,3 +1,4 @@
+import { unlink } from 'fs';
 import { UserInputError } from 'apollo-server-express';
 import bcrypt from 'bcryptjs';
 import cloudinary from 'cloudinary';
@@ -185,6 +186,10 @@ export default {
             },
             { where: { id } }
           );
+
+          unlink(path, (err) => {
+            console.error(err);
+          });
 
           if (res) {
             return true;
