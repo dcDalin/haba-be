@@ -56,6 +56,8 @@ export default {
 
         // Sanity check, case the rates are off!
         // Got to add up to amount received
+        // TODO: Does the error thrown make sense? Mpesa transaction is already complete,
+        // TODO: Write a func to reverse the transaction
         if (amountUserReceived + amountCompanyReceived !== amountReceived) {
           throw 'error';
         }

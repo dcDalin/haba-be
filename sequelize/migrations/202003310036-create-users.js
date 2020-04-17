@@ -36,6 +36,10 @@ module.exports = {
           allowNull: true,
           type: Sequelize.STRING,
         },
+        publicId: {
+          allowNull: true,
+          type: Sequelize.STRING,
+        },
         netIncome: {
           allowNull: false,
           type: Sequelize.FLOAT,

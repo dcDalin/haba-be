@@ -1,9 +1,11 @@
 import { UserInputError } from 'apollo-server-express';
 import bcrypt from 'bcryptjs';
+import cloudinary from 'cloudinary';
 import User from '../../../models/user.model';
 import { generateToken } from '../../../utils/generateToken';
 import validateUserSignUp from './validateUserSignUp';
 import checkAuth from '../../../utils/checkAuth';
+import fileUpload from '../../../utils/fileUpload';
 
 interface UserSignUpInput {
   userSignUpInput: {
@@ -137,6 +139,61 @@ export default {
         return false;
       } catch (err) {
         console.log('Err is: ', err);
+        return false;
+      }
+    },
+    async user_updateProfilePicture(_: null, { file }: any, context: any) {
+      const me = checkAuth(context);
+
+      const { id } = me;
+
+      const user = await User.findByPk(id);
+
+      if (!user) {
+        return false;
+      }
+
+      // check empty or null '' || null
+      const isEmpty = (value: string) => Boolean(!value);
+
+      // Upload file to our server and retrieve path to upload to cloudinary
+      const uploadFile = await fileUpload(file);
+
+      if (uploadFile) {
+        // Local file path
+        const { path } = uploadFile;
+
+        const { publicId } = user;
+
+        // Replace the image with the same publicId
+        const upload = await cloudinary.v2.uploader.upload(
+          path,
+          { folder: 'haba_profile_pic/', public_id: publicId },
+          (error: any, result: any) => {
+            if (error) return false;
+            // Result needed for upload below
+            return result;
+          }
+        );
+
+        if (upload) {
+          const newPublicId = !isEmpty(publicId) ? publicId : upload.public_id;
+          const res = await User.update(
+            {
+              publicId: newPublicId,
+              profileUrl: upload.url,
+            },
+            { where: { id } }
+          );
+
+          if (res) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+        return false;
+      } else {
         return false;
       }
     },

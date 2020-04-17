@@ -26,6 +26,7 @@ export default gql`
     user_signUp(userSignUpInput: UserSignUpInput): UserAuthResponse!
     user_signIn(userSignInInput: UserSignInInput): UserAuthResponse!
     user_updateProfile(userUpdateInput: UserUpdateInput): Boolean
+    user_updateProfilePicture(file: Upload!): Boolean
   }
 
   type User {
