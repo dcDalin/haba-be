@@ -4,12 +4,17 @@ import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import cloudinary from 'cloudinary';
+
 import sequelize from './db/connection';
 import typeDefs from './GraphQL/typeDefs';
 import resolvers from './GraphQL/resolvers';
 import accessEnv from './helpers/accessEnv';
 import mpesaRouter from './routes/mpesa';
 const PORT = accessEnv('PORT');
+const CLOUDINARY_APP_NAME = accessEnv('CLOUDINARY_APP_NAME');
+const CLOUDINARY_API_KEY = accessEnv('CLOUDINARY_API_KEY');
+const CLOUDINARY_API_SECRET = accessEnv('CLOUDINARY_API_SECRET');
 
 (async () => {
   try {
@@ -23,6 +28,12 @@ const PORT = accessEnv('PORT');
         origin: '*',
       })
     );
+
+    cloudinary.v2.config({
+      cloud_name: CLOUDINARY_APP_NAME,
+      api_key: CLOUDINARY_API_KEY,
+      api_secret: CLOUDINARY_API_SECRET,
+    });
 
     app.use(bodyParser.json());
 

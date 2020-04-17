@@ -56,6 +56,12 @@ export class User extends Model<User> {
   profileUrl!: string;
 
   @Column({
+    allowNull: true,
+    type: DataType.STRING,
+  })
+  publicId!: string;
+
+  @Column({
     allowNull: false,
     type: DataType.FLOAT,
     defaultValue: 0,
