@@ -4,6 +4,13 @@ import User from '../models/user.model';
 import accessEnv from '../helpers/accessEnv';
 import mpesa from '../utils/mpesa';
 const APP_URL = accessEnv('APP_URL');
+const MPESA_SHORT_CODE = accessEnv('MPESA_SHORT_CODE');
+const MPESA_LIPA_NA_MPESA_ONLINE_PASSKEY = accessEnv(
+  'MPESA_LIPA_NA_MPESA_ONLINE_PASSKEY'
+);
+const MPESA_LIPA_NA_MPESA_ONLINE_SHORT_CODE = accessEnv(
+  'MPESA_LIPA_NA_MPESA_ONLINE_SHORT_CODE'
+);
 
 class MpesaController {
   static async stkPay(req: any, res: any) {
@@ -40,47 +47,42 @@ class MpesaController {
     const transactionDesc = 'HABA';
 
     const transactionType = 'CustomerPayBillOnline';
-    try {
-      console.log(callbackUrl);
 
-      const response = await mpesa.lipaNaMpesaOnline(
-        phoneNumber,
-        amount,
-        callbackUrl,
-        payToUserName,
-        transactionDesc,
-        transactionType
-      );
-      console.log(callbackUrl);
-      if (response) {
-        const { ResponseCode, CustomerMessage } = response.data;
-        if (ResponseCode === '0') {
+    console.log(callbackUrl);
+
+    mpesa
+      .lipaNaMpesaOnline({
+        BusinessShortCode: MPESA_LIPA_NA_MPESA_ONLINE_SHORT_CODE,
+        Amount: amount,
+        PartyA: phoneNumber,
+        PartyB: MPESA_LIPA_NA_MPESA_ONLINE_SHORT_CODE,
+        PhoneNumber: phoneNumber,
+        CallBackURL: callbackUrl,
+        AccountReference: payToUserName,
+        passKey: MPESA_LIPA_NA_MPESA_ONLINE_PASSKEY,
+        TransactionType: transactionType,
+        TransactionDesc: transactionDesc,
+      })
+      .then((response) => {
+        console.log(response);
+        if (response.ResponseCode === '0') {
           return res.status(200).json({
             status: 'success',
-            msg: CustomerMessage,
-            data: response.data,
+            msg: response.CustomerMessage,
           });
         } else {
-          console.error('ERROR');
-          console.error(CustomerMessage);
-          return res
-            .status(400)
-            .json({ status: 'error', msg: CustomerMessage });
+          return res.status(200).json({
+            status: 'error',
+            msg: 'Sorry, something went wrong. Please try again.',
+          });
         }
-      } else {
-        console.error('Error');
+      })
+      .catch((error) => {
+        console.error(error);
         return res
           .status(400)
-          .json({ status: 'error', msg: 'An error occured, please try again' });
-      }
-    } catch (error) {
-      console.log('Error is: ', error);
-
-      return res.status(400).json({
-        status: 'error',
-        msg: 'An unknown error occured, please try again later',
+          .json({ status: 'error', msg: 'An unknown error occured' });
       });
-    }
   }
 
   static async stkCallback(req: any, res: any) {
