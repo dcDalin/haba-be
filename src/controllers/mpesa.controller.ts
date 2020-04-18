@@ -4,7 +4,6 @@ import User from '../models/user.model';
 import accessEnv from '../helpers/accessEnv';
 import mpesa from '../utils/mpesa';
 const APP_URL = accessEnv('APP_URL');
-const MPESA_SHORT_CODE = accessEnv('MPESA_SHORT_CODE');
 const MPESA_LIPA_NA_MPESA_ONLINE_PASSKEY = accessEnv(
   'MPESA_LIPA_NA_MPESA_ONLINE_PASSKEY'
 );
