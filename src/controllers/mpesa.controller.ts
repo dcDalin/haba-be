@@ -177,7 +177,7 @@ class MpesaController {
       res.status(400).json({ status: 'error', msg: errorMessage });
     }
   }
-  static async b2cSuccess(req: any, res: any) {
+  static async b2cSuccess(req: any, _res: any) {
     const { ResultCode } = req.body.Result;
 
     // if MPESA successfuly makes the request happen
@@ -229,7 +229,6 @@ class MpesaController {
       //TODO: Create a notifications table
       // Add something went wrong to the notifs
 
-      console.log('Error: ', req.body.Result);
       return 'Err';
     }
   }
