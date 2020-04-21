@@ -15,7 +15,7 @@ import User from './user.model';
   paranoid: true,
   tableName: 'userTransactions',
 })
-export class Haba extends Model<Haba> {
+export class UserTransaction extends Model<UserTransaction> {
   @Column({
     allowNull: false,
     autoIncrement: true,
@@ -33,9 +33,15 @@ export class Haba extends Model<Haba> {
 
   @Column({
     allowNull: false,
+    type: DataType.STRING,
+  })
+  transactionCode!: string;
+
+  @Column({
+    allowNull: false,
     type: DataType.FLOAT,
   })
-  amount!: string;
+  amount!: number;
 
   @Column({
     allowNull: false,
@@ -59,4 +65,4 @@ export class Haba extends Model<Haba> {
   user!: User;
 }
 
-export default Haba;
+export default UserTransaction;

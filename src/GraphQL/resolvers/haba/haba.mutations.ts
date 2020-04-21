@@ -30,7 +30,6 @@ export default {
         const res = await Haba.create(
           {
             userId,
-            mpesaCode,
             fromNumber,
             fromName,
             fromMessage,
@@ -46,8 +45,8 @@ export default {
         // Code
         // *********************************************************
         const amountReceived = fromAmount;
-        const amountUserReceived = 0.9 * amountReceived;
-        const amountCompanyReceived = 0.1 * amountReceived;
+        const amountUserReceived = 0.95 * amountReceived;
+        const amountCompanyReceived = 0.05 * amountReceived;
         // *********************************************************
         // Don't
         // Touch
@@ -81,6 +80,7 @@ export default {
         const transRes = await UserTransaction.create(
           {
             userId,
+            transactionCode: mpesaCode,
             amount: amountUserReceived,
             serviceFee: amountCompanyReceived,
             transactionType: 'HABA',

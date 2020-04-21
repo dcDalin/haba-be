@@ -15,6 +15,15 @@ export default gql`
     earnings_transactonChange: SubConnection
   }
 
+  extend type Mutation {
+    earnings_initiateMpesaWithdrawal(amount: Float!): WithdrawalResponse
+    earnings_mpesaWithdraw(
+      amount: Float!
+      userId: String!
+      transactionCode: String!
+    ): Boolean
+  }
+
   type SubConnection {
     netIncome: Float
     withdrawn: Float
@@ -38,5 +47,10 @@ export default gql`
     amount: Float
     serviceFee: Float
     balance: Float
+  }
+
+  type WithdrawalResponse {
+    status: String!
+    message: String!
   }
 `;

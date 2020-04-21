@@ -105,6 +105,7 @@ class MpesaController {
     console.log('Decoded message is: ', decodedMessage);
 
     if (ResultCode === 0) {
+      // TODO: Loop through MPESA result to get mpesa code
       const { Item } = req.body.Body.stkCallback.CallbackMetadata;
 
       // if name is empty, set it to default `Someone`
@@ -174,6 +175,62 @@ class MpesaController {
       console.log('Err is: ', err);
       const { errorMessage } = err.response.data;
       res.status(400).json({ status: 'error', msg: errorMessage });
+    }
+  }
+  static async b2cSuccess(req: any, res: any) {
+    const { ResultCode } = req.body.Result;
+
+    // if MPESA successfuly makes the request happen
+    if (ResultCode === 0) {
+      // Get result parameter from safaricom
+      const { ResultParameter } = req.body.Result.ResultParameters;
+
+      let transactionCode;
+
+      // Loop and assign to above variables
+      ResultParameter.forEach(function (value: any) {
+        if (value.Key === 'TransactionReceipt') {
+          transactionCode = value.Value;
+        }
+      });
+
+      const { amount, userId } = req.query;
+
+      const floatAmount = parseFloat(amount);
+
+      const mutation = `mutation Earnings_mpesaWithdraw(
+        $amount: Float!
+        $userId: String!
+        $transactionCode: String!
+      ) {
+        earnings_mpesaWithdraw(amount: $amount, userId: $userId, transactionCode: $transactionCode) 
+      }`;
+      const variables = {
+        amount: floatAmount,
+        userId,
+        transactionCode,
+      };
+
+      try {
+        const res = await gRequest(`${APP_URL}/graphql`, mutation, variables);
+        if (res) {
+          // TODO: Add notification
+          return true;
+        } else {
+          // TODO: Add notification
+          return false;
+        }
+      } catch (err) {
+        console.log(err);
+        // TODO: Add notification
+        return err;
+      }
+    } else {
+      //TODO: Create a notifications table
+      // Add something went wrong to the notifs
+
+      console.log('Error: ', req.body.Result);
+      return 'Err';
     }
   }
 }
