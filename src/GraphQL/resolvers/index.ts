@@ -11,6 +11,7 @@ export default {
   Mutation: {
     ...user.userMutations.Mutation,
     ...haba.habaMutations.Mutation,
+    ...earnings.earningsMutations.Mutation,
   },
   Subscription: {
     ...haba.habaSubscriptions.Subscription,

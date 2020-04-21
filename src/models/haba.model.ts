@@ -34,13 +34,6 @@ export class Haba extends Model<Haba> {
   @Column({
     allowNull: false,
     type: DataType.STRING,
-    unique: true,
-  })
-  mpesaCode!: string;
-
-  @Column({
-    allowNull: false,
-    type: DataType.STRING,
   })
   fromNumber!: string;
 

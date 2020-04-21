@@ -16,7 +16,6 @@ export default gql`
   type Haba {
     id: ID!
     userId: String
-    mpesaCode: String
     fromNumber: String
     fromName: String
     fromMessage: String

@@ -16,4 +16,11 @@ mpesaRouter.post('/stkcallback', mpesaController.stkCallback);
 
 mpesaRouter.post('/stkstatus', mpesaController.stkStatus);
 
+mpesaRouter.post('/b2c/timeout', (req, res) => {
+  console.log('Timeout');
+  console.log(req);
+});
+
+mpesaRouter.post('/b2c/success', mpesaController.b2cSuccess);
+
 export default mpesaRouter;

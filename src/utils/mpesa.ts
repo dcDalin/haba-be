@@ -1,4 +1,3 @@
-import path from 'path';
 import { Mpesa } from 'mpesa-api';
 import accessEnv from '../helpers/accessEnv';
 const MPESA_CONSUMER_KEY = accessEnv('MPESA_CONSUMER_KEY');
@@ -10,7 +9,7 @@ const credentials = {
   client_key: MPESA_CONSUMER_KEY,
   client_secret: MPESA_CONSUMER_SECRET,
   initiator_password: MPESA_SECURITY_CREDENTIAL,
-  certificatepath: path.resolve('src/keys/cert.cer'),
+  certificatepath: null,
 };
 
 const mpesa = new Mpesa(credentials, MPESA_ENVIRONMENT);
