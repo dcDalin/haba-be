@@ -34,7 +34,6 @@ export default {
         where: { userId },
         order: [['createdAt', 'DESC']],
         limit: limit + 1,
-        raw: true,
         ...cursorOptions,
       });
 

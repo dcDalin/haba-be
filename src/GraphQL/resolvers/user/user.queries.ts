@@ -117,7 +117,6 @@ export default {
           where: { userId: user.id },
           order: [['createdAt', 'DESC']],
           limit: limit + 1,
-          raw: true,
           ...cursorOptions,
         });
 

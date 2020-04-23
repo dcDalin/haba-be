@@ -6,6 +6,7 @@ import {
   BelongsTo,
   Table,
 } from 'sequelize-typescript';
+import moment from 'moment';
 import User from './user.model';
 
 @Table({
@@ -66,6 +67,16 @@ export class Haba extends Model<Haba> {
     type: DataType.STRING,
   })
   reply!: string;
+
+  @Column({
+    type: DataType.VIRTUAL,
+    get() {
+      // @ts-ignore
+      const date = this.dataValues.createdAt;
+      return moment(date).fromNow();
+    },
+  })
+  fromNow!: string;
 
   @BelongsTo(() => User)
   user!: User;

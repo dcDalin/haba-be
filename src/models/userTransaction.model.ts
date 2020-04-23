@@ -6,6 +6,7 @@ import {
   BelongsTo,
   Table,
 } from 'sequelize-typescript';
+import moment from 'moment';
 import User from './user.model';
 
 @Table({
@@ -60,6 +61,16 @@ export class UserTransaction extends Model<UserTransaction> {
     type: DataType.FLOAT,
   })
   balance!: string;
+
+  @Column({
+    type: DataType.VIRTUAL,
+    get() {
+      // @ts-ignore
+      const date = this.dataValues.createdAt;
+      return moment(date).format('dddd, MMMM Do YYYY, h:mm:ss a');
+    },
+  })
+  date!: string;
 
   @BelongsTo(() => User)
   user!: User;

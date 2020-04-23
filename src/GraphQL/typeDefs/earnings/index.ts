@@ -42,11 +42,12 @@ export default gql`
 
   type Earnings {
     id: ID
-    date: String
+    createdAt: String
     transactionType: String
     amount: Float
     serviceFee: Float
     balance: Float
+    date: String
   }
 
   type WithdrawalResponse {

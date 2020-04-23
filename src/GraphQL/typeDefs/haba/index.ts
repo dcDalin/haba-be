@@ -22,6 +22,7 @@ export default gql`
     fromIsPrivate: Boolean
     fromAmount: Float
     createdAt: String
+    fromNow: String
   }
 
   input HabaNewInput {

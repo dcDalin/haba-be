@@ -61,6 +61,7 @@
 		"is-reachable": "^4.0.0",
 		"jsonwebtoken": "^8.5.1",
 		"mkdirp": "^0.5.1",
+		"moment": "^2.24.0",
 		"mpesa-api": "^2.2.0",
 		"pg": "^8.0.0",
 		"reflect-metadata": "^0.1.13",
