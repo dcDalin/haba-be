@@ -115,7 +115,7 @@ export default {
     },
     async user_updateProfile(
       _: null,
-      { userUpdateInput: { phoneNumberNew, bio, userName, displayName } }: any,
+      { userUpdateInput: { bio, userName, displayName } }: any,
       context: any
     ) {
       const me = checkAuth(context);
@@ -127,7 +127,6 @@ export default {
         // Lowercase userName, otherwise it will cause an error
         const res = await User.update(
           {
-            phoneNumber: phoneNumberNew,
             bio,
             userName: userName.toLowerCase(),
             displayName,

@@ -54,7 +54,6 @@ export default gql`
   }
 
   input UserUpdateInput {
-    phoneNumberNew: String!
     bio: String!
     userName: String!
     displayName: String!
