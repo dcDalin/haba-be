@@ -1,6 +1,7 @@
 import Sequelize from 'sequelize';
 import { UserInputError } from 'apollo-server-express';
 import { Op } from 'sequelize';
+import sequelize from '../../../db/connection';
 import User from '../../../models/user.model';
 import Haba from '../../../models/haba.model';
 import checkAuth from '../../../utils/checkAuth';
@@ -13,6 +14,14 @@ const fromCursorHash = (string: string) =>
 export default {
   Query: {
     user_allUsers: () => User.findAll(),
+    async user_featuredUsers() {
+      try {
+        return await User.findAll({ order: sequelize.random(), limit: 10 });
+      } catch (err) {
+        console.log(err);
+        return err;
+      }
+    },
     async user_searchUserName(_: null, { userName }: { userName: string }) {
       // Lowercase username
       const lowercasedUserName = userName.toLowerCase();

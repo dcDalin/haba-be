@@ -20,6 +20,7 @@ export default gql`
       cursor: String
       limit: Int
     ): UserProfileConnection
+    user_featuredUsers: [User]
   }
 
   extend type Mutation {
