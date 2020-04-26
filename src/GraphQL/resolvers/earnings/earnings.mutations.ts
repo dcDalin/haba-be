@@ -1,4 +1,4 @@
-import mpesa from '../../../utils/mpesa';
+import { mpesa } from '../../../utils/mpesa';
 import pubsub from '../pubSub';
 import accessEnv from '../../../helpers/accessEnv';
 import checkAuth from '../../../utils/checkAuth';

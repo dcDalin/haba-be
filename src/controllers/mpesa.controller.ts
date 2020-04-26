@@ -2,7 +2,7 @@ import { request as gRequest } from 'graphql-request';
 import isReachable from 'is-reachable';
 import User from '../models/user.model';
 import accessEnv from '../helpers/accessEnv';
-import mpesa from '../utils/mpesa';
+import { mpesa } from '../utils/mpesa';
 const APP_URL = accessEnv('APP_URL');
 const MPESA_LIPA_NA_MPESA_ONLINE_PASSKEY = accessEnv(
   'MPESA_LIPA_NA_MPESA_ONLINE_PASSKEY'
@@ -46,8 +46,6 @@ class MpesaController {
     const transactionDesc = 'HABA';
 
     const transactionType = 'CustomerPayBillOnline';
-
-    console.log(callbackUrl);
 
     mpesa
       .lipaNaMpesaOnline({
@@ -108,6 +106,16 @@ class MpesaController {
       // TODO: Loop through MPESA result to get mpesa code
       const { Item } = req.body.Body.stkCallback.CallbackMetadata;
 
+      // TODO: Finish the loop
+      // let mpesaCode, fromAmount;
+
+      // // Loop and assign to above variables
+      // Item.forEach(function (value: any) {
+      //   if (value.Key === 'TransactionReceipt') {
+      //     mpesaCode = value.Value;
+      //   }
+      // });
+
       // if name is empty, set it to default `Someone`
       name = name ? name : 'Someone';
 
@@ -118,7 +126,7 @@ class MpesaController {
 				$fromNumber: String!
 				$fromName: String!
 				$fromMessage: String!
-				$fromIsPrivate: Boolean!
+				$fromIsPrivate: Boolean! 
 				$fromAmount: Float!
 			) {
 				haba_newHaba(habaNewInput: { 

@@ -23,4 +23,14 @@ mpesaRouter.post('/b2c/timeout', (req, _res) => {
 
 mpesaRouter.post('/b2c/success', mpesaController.b2cSuccess);
 
+mpesaRouter.post('/reversal/success', (req, _res) => {
+  console.log('Success reversal');
+  console.log(req);
+});
+
+mpesaRouter.post('/reversal/timeout', (req, _res) => {
+  console.log('Reversal timeout');
+  console.log(req);
+});
+
 export default mpesaRouter;

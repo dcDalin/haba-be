@@ -1,5 +1,6 @@
 import pubsub from '../pubSub';
 import sequelize from '../../../db/connection';
+import { reversal } from '../../../utils/mpesa';
 import Haba from '../../../models/haba.model';
 import User from '../../../models/user.model';
 import Admin from '../../../models/admin.model';
@@ -55,10 +56,9 @@ export default {
 
         // Sanity check, case the rates are off!
         // Got to add up to amount received
-        // TODO: Does the error thrown make sense? Mpesa transaction is already complete,
-        // TODO: Write a func to reverse the transaction
         if (amountUserReceived + amountCompanyReceived !== amountReceived) {
-          throw 'error';
+          reversal(mpesaCode, fromAmount);
+          return 'error';
         }
 
         const adminOnePhoneNumber = '254715973838';
@@ -153,7 +153,8 @@ export default {
 
         return res.toJSON();
       } catch (err) {
-        console.log('Err is: ', err);
+        // Reverse the MPESA transaction
+        reversal(mpesaCode, fromAmount);
         return err;
       }
     },

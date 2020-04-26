@@ -195,8 +195,12 @@ export default {
           } else {
             return false;
           }
+        } else {
+          unlink(path, (err) => {
+            console.error(err);
+          });
+          return false;
         }
-        return false;
       } else {
         return false;
       }
