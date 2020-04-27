@@ -1,72 +1,85 @@
-import "dotenv/config";
-import { createServer } from "http";
-import express from "express";
-import { ApolloServer } from "apollo-server-express";
+import 'dotenv/config';
+import { createServer } from 'http';
+import express from 'express';
+import { ApolloServer } from 'apollo-server-express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import cloudinary from 'cloudinary';
 
-import bodyParser from "body-parser";
-import cors from "cors";
-import sequelize from "./db/connection";
-import typeDefs from "./GraphQL/typeDefs";
-import resolvers from "./GraphQL/resolvers";
-import accessEnv from "./helpers/accessEnv";
-import mpesaRouter from "./routes/mpesa";
-import getUserId from "./utils/getUserId";
-const PORT = accessEnv("PORT");
+import sequelize from './db/connection';
+import typeDefs from './GraphQL/typeDefs';
+import resolvers from './GraphQL/resolvers';
+import accessEnv from './helpers/accessEnv';
+import mpesaRouter from './routes/mpesa';
+const PORT = accessEnv('PORT');
+const CLOUDINARY_APP_NAME = accessEnv('CLOUDINARY_APP_NAME');
+const CLOUDINARY_API_KEY = accessEnv('CLOUDINARY_API_KEY');
+const CLOUDINARY_API_SECRET = accessEnv('CLOUDINARY_API_SECRET');
 
 (async () => {
-	try {
-		const app = express();
+  try {
+    const app = express();
 
-		app.disable("x-powered-by");
+    app.disable('x-powered-by');
 
-		app.use(
-			cors({
-				credentials: true,
-				origin: "*",
-			})
-		);
+    app.use(
+      cors({
+        credentials: true,
+        origin: '*',
+      })
+    );
 
-		app.use(bodyParser.json());
+    cloudinary.v2.config({
+      cloud_name: CLOUDINARY_APP_NAME,
+      api_key: CLOUDINARY_API_KEY,
+      api_secret: CLOUDINARY_API_SECRET,
+    });
 
-		app.use("/pay", mpesaRouter);
+    app.use(bodyParser.json());
 
-		const server = new ApolloServer({
-			typeDefs,
-			resolvers,
-			context: async ({ req, res, connection }) => {
-				if (connection) {
-					// check connection for metadata
-					console.log("Connection: ", connection.context);
-					return connection.context;
-				} else {
-					return { req, res };
-				}
-			},
-			// context: ({ req, res }) => ({ req, res }),
-			introspection: true,
-			playground: true,
-		});
+    app.use('/pay', mpesaRouter);
 
-		server.applyMiddleware({ app, cors: false });
+    const server = new ApolloServer({
+      typeDefs,
+      resolvers,
+      context: async ({ req, res, connection }) => {
+        if (connection) {
+          // check connection for metadata
+          console.log(
+            'Connection is: ',
+            connection.context.req.headers.authorization
+          );
+          console.log('Active Subscription is: ', connection.operationName);
+          return connection.context;
+        } else {
+          return { req, res };
+        }
+      },
+      // context: ({ req, res }) => ({ req, res }),
+      introspection: true,
+      playground: true,
+    });
 
-		const httpServer = createServer(app);
+    server.applyMiddleware({ app, cors: false });
 
-		server.installSubscriptionHandlers(httpServer);
+    const httpServer = createServer(app);
 
-		await sequelize.authenticate();
+    server.installSubscriptionHandlers(httpServer);
 
-		httpServer.listen({ port: PORT }, () =>
-			console.log(
-				`
+    await sequelize.authenticate();
+
+    httpServer.listen({ port: PORT }, () =>
+      console.log(
+        `
         ################################################
 
         🚀 Server ready at http://localhost:${PORT}${server.graphqlPath} 🚀
 
         ################################################
         `
-			)
-		);
-	} catch (e) {
-		console.error(e);
-	}
+      )
+    );
+  } catch (e) {
+    console.error(e);
+  }
 })();

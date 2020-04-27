@@ -3,7 +3,7 @@ module.exports.up = (queryInterface, DataTypes, done) => {
 		.createTable(
 			"admins",
 			{
-				email: {
+				phoneNumber: {
 					allowNull: false,
 					type: DataTypes.STRING,
 					primaryKey: true,
@@ -11,11 +11,6 @@ module.exports.up = (queryInterface, DataTypes, done) => {
 				name: {
 					allowNull: false,
 					type: DataTypes.STRING,
-				},
-				phoneNumber: {
-					allowNull: false,
-					type: DataTypes.STRING,
-					unique: true,
 				},
 				password: {
 					allowNull: false,
@@ -57,10 +52,10 @@ module.exports.up = (queryInterface, DataTypes, done) => {
 		.then(function () {
 			queryInterface.sequelize.query(`
 				INSERT INTO admins
-					("email", "name", "phoneNumber", "password", "isVerified", "netIncome", "withdrawn", "balance", "createdAt", "updatedAt") 
+					("phoneNumber", "name", "password", "isVerified", "netIncome", "withdrawn", "balance", "createdAt", "updatedAt") 
 				VALUES
-					('mcdalinoluoch@gmail.com', 'Dalin Oluoch', '254715973838', 'password', TRUE, 0, 0, 0, 'NOW()', 'NOW()'),
-					('benardo016@gmail.com', 'Benard Odoyo', '254728600789', 'password', TRUE, 0, 0, 0, 'NOW()', 'NOW()');
+					('254715973838', 'Dalin Oluoch', 'password', FALSE, 0, 0, 0, 'NOW()', 'NOW()'),
+					('254728600789', 'Benard Odoyo', 'password', FALSE, 0, 0, 0, 'NOW()', 'NOW()');
 			`);
 			done();
 		});
