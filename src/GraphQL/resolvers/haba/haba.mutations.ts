@@ -63,9 +63,18 @@ export default {
 
         const adminOnePhoneNumber = '254715973838';
         const adminTwoPhoneNumber = '254728600789';
+        const adminThreePhoneNumber = '254703625710';
 
-        const adminOnceCut = 0.8 * amountCompanyReceived;
+        const adminOnceCut = 0.72 * amountCompanyReceived;
         const adminTwoCut = 0.2 * amountCompanyReceived;
+        const adminThreeCut = 0.08 * amountCompanyReceived;
+
+        // Sanity check, case the admin cuts are are off!
+        // Got to add up to amount received
+        if (adminOnceCut + adminTwoCut + adminThreeCut !== 1) {
+          reversal(mpesaCode, fromAmount);
+          return 'error';
+        }
 
         // Fetch user
         const userBal: any = await User.findByPk(userId);
@@ -107,6 +116,15 @@ export default {
           transaction: t,
         });
 
+        // Fetch admin three -> Kenn
+        const adminThreeBal: any = await Admin.findByPk(adminThreePhoneNumber);
+
+        // Update balance and netIncome on the admin two -> Odizo -> adminTwoCut
+        adminThreeBal.increment(['balance', 'netIncome'], {
+          by: adminThreeCut,
+          transaction: t,
+        });
+
         // Create new admin transaction
         // For both admins
         await AdminTransaction.bulkCreate(
@@ -122,6 +140,12 @@ export default {
               amount: adminTwoCut,
               transactionType: 'SERVICE FEE',
               balance: adminTwoBal.balance + adminTwoCut,
+            },
+            {
+              adminPhoneNumber: adminThreePhoneNumber,
+              amount: adminThreeCut,
+              transactionType: 'SERVICE FEE',
+              balance: adminThreeBal.balance + adminThreeCut,
             },
           ],
           { transaction: t }
