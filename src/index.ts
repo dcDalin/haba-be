@@ -11,6 +11,7 @@ import typeDefs from './GraphQL/typeDefs';
 import resolvers from './GraphQL/resolvers';
 import accessEnv from './helpers/accessEnv';
 import mpesaRouter from './routes/mpesa';
+const NODE_ENV = accessEnv('NODE_ENV');
 const PORT = accessEnv('PORT');
 const CLOUDINARY_APP_NAME = accessEnv('CLOUDINARY_APP_NAME');
 const CLOUDINARY_API_KEY = accessEnv('CLOUDINARY_API_KEY');
@@ -45,19 +46,13 @@ const CLOUDINARY_API_SECRET = accessEnv('CLOUDINARY_API_SECRET');
       context: async ({ req, res, connection }) => {
         if (connection) {
           // check connection for metadata
-          console.log(
-            'Connection is: ',
-            connection.context.req.headers.authorization
-          );
-          console.log('Active Subscription is: ', connection.operationName);
           return connection.context;
         } else {
           return { req, res };
         }
       },
-      // context: ({ req, res }) => ({ req, res }),
       introspection: true,
-      playground: true,
+      playground: NODE_ENV !== 'production',
     });
 
     server.applyMiddleware({ app, cors: false });
