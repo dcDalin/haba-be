@@ -7,7 +7,10 @@ import { generateToken } from '../../../utils/generateToken';
 import validateUserSignUp from './validateUserSignUp';
 import checkAuth from '../../../utils/checkAuth';
 import fileUpload from '../../../utils/fileUpload';
-import sendVerificationCode from '../../../utils/sendVerificationCode';
+import {
+  sendVerificationCode,
+  resendVerificationCode,
+} from '../../../utils/sendVerificationCode';
 
 interface UserSignUpInput {
   userSignUpInput: {
@@ -250,15 +253,20 @@ export default {
         };
       }
 
-      const smsRes: any = await sendVerificationCode(user.phoneNumber);
+      const smsRes: any = await resendVerificationCode(
+        user.id,
+        user.phoneNumber
+      );
 
-      if (!smsRes) {
+      const { status, data } = smsRes;
+
+      if (status !== 'success') {
         return {
           status: 'false',
-          message: 'Could not send text',
+          message: data,
         };
       }
-      user.verificationCode = smsRes;
+      user.verificationCode = data;
       await user.save();
 
       return {

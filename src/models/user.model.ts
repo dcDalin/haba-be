@@ -95,6 +95,13 @@ export class User extends Model<User> {
   })
   verificationCode!: string;
 
+  @Column({
+    allowNull: true,
+    type: DataType.INTEGER,
+    defaultValue: 0,
+  })
+  smsRequestCount!: number;
+
   @HasMany(() => Haba)
   habas!: Haba[];
 }
