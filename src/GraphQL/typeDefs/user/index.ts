@@ -28,6 +28,8 @@ export default gql`
     user_signIn(userSignInInput: UserSignInInput): UserAuthResponse!
     user_updateProfile(userUpdateInput: UserUpdateInput): Boolean
     user_updateProfilePicture(file: Upload!): Boolean
+    user_enterVerificationCode(verificationCode: String!): Boolean
+    user_sendVerificationCode: Res
   }
 
   type User {
@@ -37,6 +39,7 @@ export default gql`
     phoneNumber: String
     profileUrl: String
     bio: String
+    isVerified: Boolean
   }
 
   type UserProfileConnection {
@@ -85,5 +88,10 @@ export default gql`
   type UserAuthResponse {
     token: String!
     userName: String!
+  }
+
+  type Res {
+    status: String!
+    message: String!
   }
 `;

@@ -7,6 +7,7 @@ import { generateToken } from '../../../utils/generateToken';
 import validateUserSignUp from './validateUserSignUp';
 import checkAuth from '../../../utils/checkAuth';
 import fileUpload from '../../../utils/fileUpload';
+import sendVerificationCode from '../../../utils/sendVerificationCode';
 
 interface UserSignUpInput {
   userSignUpInput: {
@@ -66,6 +67,16 @@ export default {
         });
       }
 
+      const smsRes: any = await sendVerificationCode(phoneNumber);
+
+      if (!smsRes) {
+        throw new UserInputError('SMS Error', {
+          errors: {
+            userName: 'Could not send Verification code',
+          },
+        });
+      }
+
       // Hash the password
       const hashedPassword = await bcrypt.hash(password, 12);
 
@@ -73,6 +84,7 @@ export default {
       const res = await User.create({
         userName: userName.toLowerCase(),
         phoneNumber,
+        verificationCode: smsRes,
         password: hashedPassword,
       });
 
@@ -204,6 +216,55 @@ export default {
       } else {
         return false;
       }
+    },
+    async user_enterVerificationCode(
+      _: null,
+      { verificationCode }: any,
+      context: any
+    ) {
+      const me = checkAuth(context);
+
+      const { id } = me;
+
+      const user = await User.findByPk(id);
+
+      if (!user) {
+        return false;
+      }
+      if (user.verificationCode === verificationCode) {
+        user.verificationCode = '0';
+        user.isVerified = 'TRUE';
+        await user.save();
+        return true;
+      }
+      return false;
+    },
+    async user_sendVerificationCode(_: null, __: null, context: any) {
+      const me = checkAuth(context);
+      const { id } = me;
+      const user = await User.findByPk(id);
+      if (!user) {
+        return {
+          status: 'false',
+          message: 'User not found',
+        };
+      }
+
+      const smsRes: any = await sendVerificationCode(user.phoneNumber);
+
+      if (!smsRes) {
+        return {
+          status: 'false',
+          message: 'Could not send text',
+        };
+      }
+      user.verificationCode = smsRes;
+      await user.save();
+
+      return {
+        status: 'success',
+        message: 'New verification code sent to your phone',
+      };
     },
   },
 };

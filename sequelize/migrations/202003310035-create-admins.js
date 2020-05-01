@@ -20,6 +20,10 @@ module.exports.up = (queryInterface, DataTypes, done) => {
           allowNull: false,
           type: DataTypes.BOOLEAN,
         },
+        verificationCode: {
+          allowNull: true,
+          type: DataTypes.STRING,
+        },
         netIncome: {
           allowNull: false,
           type: DataTypes.FLOAT,

@@ -52,6 +52,14 @@ module.exports = {
           allowNull: false,
           type: Sequelize.FLOAT,
         },
+        isVerified: {
+          allowNull: false,
+          type: Sequelize.BOOLEAN,
+        },
+        verificationCode: {
+          allowNull: true,
+          type: Sequelize.STRING,
+        },
         createdAt: {
           allowNull: false,
           type: Sequelize.DATE,
