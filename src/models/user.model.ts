@@ -43,7 +43,7 @@ export class User extends Model<User> {
   @Column({
     allowNull: true,
     type: DataType.TEXT,
-    defaultValue: 'Hey, go ahead and Haba on my account.',
+    defaultValue: 'Hey, go ahead and goHaba on my account.',
   })
   bio!: string;
 
@@ -81,6 +81,19 @@ export class User extends Model<User> {
     defaultValue: 0,
   })
   balance!: number;
+
+  @Column({
+    allowNull: false,
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+  })
+  isVerified!: string;
+
+  @Column({
+    allowNull: true,
+    type: DataType.STRING,
+  })
+  verificationCode!: string;
 
   @HasMany(() => Haba)
   habas!: Haba[];

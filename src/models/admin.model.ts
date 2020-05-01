@@ -31,6 +31,12 @@ export class Admin extends Model<Admin> {
   isVerified!: boolean;
 
   @Column({
+    allowNull: true,
+    type: DataType.STRING,
+  })
+  verificationCode!: string;
+
+  @Column({
     allowNull: false,
     type: DataType.FLOAT,
   })
