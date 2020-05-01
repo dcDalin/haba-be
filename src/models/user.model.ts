@@ -82,6 +82,19 @@ export class User extends Model<User> {
   })
   balance!: number;
 
+  @Column({
+    allowNull: false,
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+  })
+  isVerified!: string;
+
+  @Column({
+    allowNull: true,
+    type: DataType.STRING,
+  })
+  verificationCode!: string;
+
   @HasMany(() => Haba)
   habas!: Haba[];
 }
