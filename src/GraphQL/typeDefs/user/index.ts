@@ -30,6 +30,13 @@ export default gql`
     user_updateProfilePicture(file: Upload!): Boolean
     user_enterVerificationCode(verificationCode: String!): Boolean
     user_sendVerificationCode: Res
+    user_resetPassCode(phoneNumber: String!): Res
+    user_submitResetCode(resetCode: String!, phoneNumber: String!): Res
+    user_newPass(
+      resetCode: String!
+      phoneNumber: String!
+      password: String!
+    ): Res
   }
 
   type User {

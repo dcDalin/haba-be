@@ -13,13 +13,24 @@ const africasTalking = new AfricasTalking({
 
 const sms = africasTalking.SMS;
 
-const randomNumber = Math.floor(1000 + Math.random() * 9000);
-
-const message = 'Your goHaba verification code is: ' + randomNumber;
+const makeId = (length: number) => {
+  let result = '';
+  const characters =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+};
 
 const sendVerificationCode = async (phoneNumber: string) => {
   // Phone number needs to be like +254....
   const sendTo = `+${phoneNumber}`;
+
+  const randomNumber = makeId(4);
+
+  const message = 'Your goHaba verification code is: ' + randomNumber;
 
   try {
     await sms.send({ to: sendTo, message: message });
@@ -33,6 +44,10 @@ const sendVerificationCode = async (phoneNumber: string) => {
 const resendVerificationCode = async (userId: string, phoneNumber: string) => {
   // Phone number needs to be like +254....
   const sendTo = `+${phoneNumber}`;
+
+  const randomNumber = makeId(4);
+
+  const message = 'Your goHaba verification code is: ' + randomNumber;
 
   const user = await User.findByPk(userId);
 
