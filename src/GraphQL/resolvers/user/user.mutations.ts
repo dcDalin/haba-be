@@ -274,5 +274,90 @@ export default {
         message: 'New verification code sent to your phone',
       };
     },
+    async user_resetPassCode(_: null, { phoneNumber }: any) {
+      const user = await User.findOne({
+        where: { phoneNumber },
+      });
+
+      if (user) {
+        const smsRes: any = await resendVerificationCode(
+          user.id,
+          user.phoneNumber
+        );
+
+        const { status, data } = smsRes;
+
+        if (status !== 'success') {
+          return {
+            status: 'false',
+            message: data,
+          };
+        }
+        user.verificationCode = data;
+        await user.save();
+
+        return {
+          status: 'success',
+          message: 'New verification code sent to your phone',
+        };
+      } else {
+        return {
+          status: 'error',
+          message: 'Phone number does not exist',
+        };
+      }
+    },
+    async user_submitResetCode(_: null, { resetCode, phoneNumber }: any) {
+      const user = await User.findOne({
+        where: { phoneNumber },
+      });
+
+      if (user) {
+        if (user.verificationCode === resetCode) {
+          return {
+            status: 'success',
+            message: 'Code has been verified, change your password',
+          };
+        } else {
+          return {
+            status: 'error',
+            message: 'Invalid code',
+          };
+        }
+      } else {
+        return {
+          status: 'error',
+          message: 'Phone number does not exist',
+        };
+      }
+    },
+    async user_newPass(_: null, { resetCode, phoneNumber, password }: any) {
+      const user = await User.findOne({
+        where: { phoneNumber },
+      });
+
+      if (user) {
+        if (user.verificationCode === resetCode) {
+          // Hash the password
+          const hashedPassword = await bcrypt.hash(password, 12);
+          user.password = hashedPassword;
+          await user.save();
+          return {
+            status: 'success',
+            message: 'Password has been changed, please log in',
+          };
+        } else {
+          return {
+            status: 'error',
+            message: 'Invalid code',
+          };
+        }
+      } else {
+        return {
+          status: 'error',
+          message: 'Phone number does not exist',
+        };
+      }
+    },
   },
 };
