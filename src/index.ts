@@ -27,7 +27,7 @@ const CLOUDINARY_API_SECRET = accessEnv('CLOUDINARY_API_SECRET');
       cors({
         credentials: true,
         origin: '*',
-      })
+      }),
     );
 
     cloudinary.v2.config({
@@ -71,8 +71,8 @@ const CLOUDINARY_API_SECRET = accessEnv('CLOUDINARY_API_SECRET');
         🚀 Server ready at http://localhost:${PORT}${server.graphqlPath} 🚀
 
         ################################################
-        `
-      )
+        `,
+      ),
     );
   } catch (e) {
     console.error(e);

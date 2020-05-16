@@ -99,4 +99,4 @@ const resendVerificationCode = async (userId: string, phoneNumber: string) => {
   }
 };
 
-export { sendVerificationCode, resendVerificationCode };
+export { sendVerificationCode, resendVerificationCode, sms };

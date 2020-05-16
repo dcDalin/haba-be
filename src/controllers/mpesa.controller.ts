@@ -5,10 +5,10 @@ import accessEnv from '../helpers/accessEnv';
 import { mpesa } from '../utils/mpesa';
 const APP_URL = accessEnv('APP_URL');
 const MPESA_LIPA_NA_MPESA_ONLINE_PASSKEY = accessEnv(
-  'MPESA_LIPA_NA_MPESA_ONLINE_PASSKEY'
+  'MPESA_LIPA_NA_MPESA_ONLINE_PASSKEY',
 );
 const MPESA_LIPA_NA_MPESA_ONLINE_SHORT_CODE = accessEnv(
-  'MPESA_LIPA_NA_MPESA_ONLINE_SHORT_CODE'
+  'MPESA_LIPA_NA_MPESA_ONLINE_SHORT_CODE',
 );
 
 class MpesaController {
@@ -47,6 +47,8 @@ class MpesaController {
 
     const transactionType = 'CustomerPayBillOnline';
 
+    console.log('About to run lipaNaMpesaOnline');
+
     mpesa
       .lipaNaMpesaOnline({
         BusinessShortCode: MPESA_LIPA_NA_MPESA_ONLINE_SHORT_CODE,
@@ -61,13 +63,17 @@ class MpesaController {
         TransactionDesc: transactionDesc,
       })
       .then((response) => {
+        console.log('About to log response');
         console.log(response);
         if (response.ResponseCode === '0') {
+          console.log('Success stk pay');
+          console.log(callbackUrl);
           return res.status(200).json({
             status: 'success',
             msg: response.CustomerMessage,
           });
         } else {
+          console.log('Failed stk pay');
           return res.status(200).json({
             status: 'error',
             msg: 'Sorry, something went wrong. Please try again.',
@@ -75,6 +81,7 @@ class MpesaController {
         }
       })
       .catch((error) => {
+        console.log('Error stk pay');
         console.error(error);
         return res
           .status(400)

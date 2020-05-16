@@ -1,7 +1,7 @@
 const validateSignup = (
   userName: string,
   phoneNumber: string,
-  password: string
+  password: string,
 ): any => {
   const errors: any = {};
 

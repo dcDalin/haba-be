@@ -12,7 +12,7 @@ export default {
           const payloadUserId = parseInt(payload.haba_subNewHaba.userId);
 
           return argsUserId === payloadUserId;
-        }
+        },
       ),
     },
   },

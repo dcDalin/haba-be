@@ -1,4 +1,4 @@
-import { mpesa } from '../../../utils/mpesa';
+// import { mpesa } from '../../../utils/mpesa';
 import pubsub from '../pubSub';
 import accessEnv from '../../../helpers/accessEnv';
 import checkAuth from '../../../utils/checkAuth';
@@ -6,18 +6,19 @@ import User from '../../../models/user.model';
 import sequelize from '../../../db/connection';
 import UserTransaction from '../../../models/userTransaction.model';
 import { TRANSACTION_CHANGE } from '../types';
-const MPESA_SHORT_CODE = accessEnv('MPESA_SHORT_CODE');
-const APP_URL = accessEnv('APP_URL');
-const NODE_ENV = accessEnv('NODE_ENV');
-const MPESA_TEST_MSISDN = accessEnv('MPESA_TEST_MSISDN');
-const MPESA_INITIATOR_NAME = accessEnv('MPESA_INITIATOR_NAME');
+import { sms } from '../../../utils/sendVerificationCode';
+// const MPESA_SHORT_CODE = accessEnv('MPESA_SHORT_CODE');
+// const APP_URL = accessEnv('APP_URL');
+// const NODE_ENV = accessEnv('NODE_ENV');
+// const MPESA_TEST_MSISDN = accessEnv('MPESA_TEST_MSISDN');
+// const MPESA_INITIATOR_NAME = accessEnv('MPESA_INITIATOR_NAME');
 
 export default {
   Mutation: {
     async earnings_initiateMpesaWithdrawal(
       _: null,
       { amount }: any,
-      context: any
+      context: any,
     ) {
       const me = checkAuth(context);
 
@@ -36,45 +37,61 @@ export default {
             message: 'Sorry, you have insufficient funds',
           };
         } else {
+          // Send sms to us
+
+          await sms.send({
+            to: 254715973838,
+            message: `${phoneNumber} wants to withdraw ${amount}`,
+          });
+
+          await sms.send({
+            to: 254728600789,
+            message: `${phoneNumber} wants to withdraw ${amount}`,
+          });
+
+          return {
+            status: 'success',
+            message: 'Your request is being processed',
+          };
           // Phone number depending on the environment
-          const withdrawPhoneNumber =
-            NODE_ENV === 'production' ? phoneNumber : MPESA_TEST_MSISDN;
+          // const withdrawPhoneNumber =
+          //   NODE_ENV === 'production' ? phoneNumber : MPESA_TEST_MSISDN;
 
-          const successUrl = `${APP_URL}/pay/b2c/success?amount=${amount}&userId=${id}`;
+          // const successUrl = `${APP_URL}/pay/b2c/success?amount=${amount}&userId=${id}`;
 
-          return mpesa
-            .b2c({
-              Initiator: MPESA_INITIATOR_NAME,
-              Amount: amount,
-              PartyA: MPESA_SHORT_CODE,
-              PartyB: withdrawPhoneNumber,
-              QueueTimeOutURL: `${APP_URL}/pay/b2c/timeout`,
-              ResultURL: successUrl,
-              CommandID: 'BusinessPayment',
-              Occasion: 'Withdrawal',
-              Remarks: 'Withdrawal',
-            })
-            .then((response) => {
-              console.log('Response is: ', response);
-              if (response.ResponseCode === '0') {
-                return {
-                  status: 'success',
-                  message: 'Your request is being processed',
-                };
-              } else {
-                return {
-                  status: 'error',
-                  message: 'Something went wrong, please try again',
-                };
-              }
-            })
-            .catch((error) => {
-              console.log('Error is: ', error);
-              return {
-                status: 'error',
-                message: 'Something went wrong, please try again',
-              };
-            });
+          // return mpesa
+          //   .b2c({
+          //     Initiator: MPESA_INITIATOR_NAME,
+          //     Amount: amount,
+          //     PartyA: MPESA_SHORT_CODE,
+          //     PartyB: withdrawPhoneNumber,
+          //     QueueTimeOutURL: `${APP_URL}/pay/b2c/timeout`,
+          //     ResultURL: successUrl,
+          //     CommandID: 'BusinessPayment',
+          //     Occasion: 'Withdrawal',
+          //     Remarks: 'Withdrawal',
+          //   })
+          //   .then((response) => {
+          //     console.log('Response is: ', response);
+          //     if (response.ResponseCode === '0') {
+          //       return {
+          //         status: 'success',
+          //         message: 'Your request is being processed',
+          //       };
+          //     } else {
+          //       return {
+          //         status: 'error',
+          //         message: 'Something went wrong, please try again',
+          //       };
+          //     }
+          //   })
+          //   .catch((error) => {
+          //     console.log('Error is: ', error);
+          //     return {
+          //       status: 'error',
+          //       message: 'Something went wrong, please try again',
+          //     };
+          //   });
         }
       } else {
         return {
@@ -85,7 +102,7 @@ export default {
     },
     async earnings_mpesaWithdraw(
       _: null,
-      { amount, userId, transactionCode }: any
+      { amount, userId, transactionCode }: any,
     ) {
       const user: any = await User.findByPk(userId);
       // start a transaction
@@ -123,7 +140,7 @@ export default {
             transactionType,
             balance: newBalance,
           },
-          { transaction: t }
+          { transaction: t },
         );
 
         await Promise.all([
