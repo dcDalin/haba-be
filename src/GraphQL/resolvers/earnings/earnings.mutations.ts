@@ -13,6 +13,7 @@ import { sms } from '../../../utils/sendVerificationCode';
 // const MPESA_TEST_MSISDN = accessEnv('MPESA_TEST_MSISDN');
 // const MPESA_INITIATOR_NAME = accessEnv('MPESA_INITIATOR_NAME');
 
+
 export default {
   Mutation: {
     async earnings_initiateMpesaWithdrawal(
