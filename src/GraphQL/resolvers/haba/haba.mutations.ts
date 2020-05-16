@@ -22,7 +22,7 @@ export default {
           fromIsPrivate,
           fromAmount,
         },
-      }: any
+      }: any,
     ) {
       // start a transaction
       const t = await sequelize.transaction();
@@ -37,7 +37,7 @@ export default {
             fromIsPrivate,
             fromAmount,
           },
-          { transaction: t }
+          { transaction: t },
         );
 
         // Don't
@@ -57,6 +57,7 @@ export default {
         // Sanity check, case the rates are off!
         // Got to add up to amount received
         if (amountUserReceived + amountCompanyReceived !== amountReceived) {
+          console.log('Amount received not correct, about to reverse');
           reversal(mpesaCode, fromAmount);
           return 'error';
         }
@@ -65,16 +66,25 @@ export default {
         const adminTwoPhoneNumber = '254728600789';
         const adminThreePhoneNumber = '254703625710';
 
-        const adminOnceCut = 0.72 * amountCompanyReceived;
-        const adminTwoCut = 0.2 * amountCompanyReceived;
-        const adminThreeCut = 0.08 * amountCompanyReceived;
+        const adminOneShare = 0.72;
+        const adminTwoShare = 0.2;
+        const adminThreeShare = 0.08;
+
+        const adminOnceCut = adminOneShare * amountCompanyReceived;
+        const adminTwoCut = adminTwoShare * amountCompanyReceived;
+        const adminThreeCut = adminThreeShare * amountCompanyReceived;
 
         // Sanity check, case the admin cuts are are off!
         // Got to add up to amount received
-        if (adminOnceCut + adminTwoCut + adminThreeCut !== 1) {
-          reversal(mpesaCode, fromAmount);
-          return 'error';
-        }
+        // TODO: Admin share always 0.9999999 fix it
+        // if (adminOneShare + adminTwoShare + adminThreeShare !== 1) {
+        //   console.log(adminOneShare + adminTwoShare + adminThreeShare);
+        //   console.log(1);
+        //   console.log('Reversing because admin cuts not 1');
+        //   reversal(mpesaCode, fromAmount);
+
+        //   return 'error';
+        // }
 
         // Fetch user
         const userBal: any = await User.findByPk(userId);
@@ -95,7 +105,7 @@ export default {
             transactionType: 'HABA',
             balance: userBal.balance + amountUserReceived,
           },
-          { transaction: t }
+          { transaction: t },
         );
 
         // Fetch admin one -> DC -> phoneNumber is the pk
@@ -148,7 +158,7 @@ export default {
               balance: adminThreeBal.balance + adminThreeCut,
             },
           ],
-          { transaction: t }
+          { transaction: t },
         );
 
         await t.commit();
@@ -178,6 +188,7 @@ export default {
         return res.toJSON();
       } catch (err) {
         // Reverse the MPESA transaction
+        console.log('Error caught, about to reverse pay');
         reversal(mpesaCode, fromAmount);
         return err;
       }
