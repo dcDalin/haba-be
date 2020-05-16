@@ -69,7 +69,7 @@ export default {
     },
     async user_allowChangeUserName(
       _: null,
-      { newUserName, originalUserName }: any
+      { newUserName, originalUserName }: any,
     ) {
       const allowChange = await User.findOne({
         where: { userName: newUserName },
@@ -85,7 +85,7 @@ export default {
     },
     async user_allowChangePhoneNumber(
       _: null,
-      { newPhoneNumber, originalPhoneNumber }: any
+      { newPhoneNumber, originalPhoneNumber }: any,
     ) {
       const allowChange = await User.findOne({
         where: { phoneNumber: newPhoneNumber },
@@ -145,7 +145,7 @@ export default {
           return {
             hasNextPage,
             endCursor: toCursorHash(
-              edges[edges.length - 1].createdAt.toString()
+              edges[edges.length - 1].createdAt.toString(),
             ),
             user,
             haba: edges,

@@ -1,4 +1,4 @@
-import { mpesa } from '../../../utils/mpesa';
+// import { mpesa } from '../../../utils/mpesa';
 import pubsub from '../pubSub';
 import accessEnv from '../../../helpers/accessEnv';
 import checkAuth from '../../../utils/checkAuth';
@@ -7,11 +7,12 @@ import sequelize from '../../../db/connection';
 import UserTransaction from '../../../models/userTransaction.model';
 import { TRANSACTION_CHANGE } from '../types';
 import { sms } from '../../../utils/sendVerificationCode';
-const MPESA_SHORT_CODE = accessEnv('MPESA_SHORT_CODE');
-const APP_URL = accessEnv('APP_URL');
-const NODE_ENV = accessEnv('NODE_ENV');
-const MPESA_TEST_MSISDN = accessEnv('MPESA_TEST_MSISDN');
-const MPESA_INITIATOR_NAME = accessEnv('MPESA_INITIATOR_NAME');
+// const MPESA_SHORT_CODE = accessEnv('MPESA_SHORT_CODE');
+// const APP_URL = accessEnv('APP_URL');
+// const NODE_ENV = accessEnv('NODE_ENV');
+// const MPESA_TEST_MSISDN = accessEnv('MPESA_TEST_MSISDN');
+// const MPESA_INITIATOR_NAME = accessEnv('MPESA_INITIATOR_NAME');
+
 
 export default {
   Mutation: {

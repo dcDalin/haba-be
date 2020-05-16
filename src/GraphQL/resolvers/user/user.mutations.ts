@@ -31,13 +31,13 @@ export default {
   Mutation: {
     async user_signUp(
       _: null,
-      { userSignUpInput: { userName, phoneNumber, password } }: UserSignUpInput
+      { userSignUpInput: { userName, phoneNumber, password } }: UserSignUpInput,
     ) {
       // Validate user input
       const { valid, errors } = validateUserSignUp(
         userName,
         phoneNumber,
-        password
+        password,
       );
       if (!valid) {
         throw new UserInputError('Errors', { errors });
@@ -101,7 +101,7 @@ export default {
     },
     async user_signIn(
       _: null,
-      { userSignInInput: { phoneNumber, password } }: UserSignInInput
+      { userSignInInput: { phoneNumber, password } }: UserSignInInput,
     ) {
       const user = await User.findOne({
         where: { phoneNumber },
@@ -131,7 +131,7 @@ export default {
     async user_updateProfile(
       _: null,
       { userUpdateInput: { bio, userName, displayName } }: any,
-      context: any
+      context: any,
     ) {
       const me = checkAuth(context);
 
@@ -146,7 +146,7 @@ export default {
             userName: userName.toLowerCase(),
             displayName,
           },
-          { where: { id: userId } }
+          { where: { id: userId } },
         );
         if (res) {
           return true;
@@ -188,7 +188,7 @@ export default {
             if (error) return false;
             // Result needed for upload below
             return result;
-          }
+          },
         );
 
         if (upload) {
@@ -198,7 +198,7 @@ export default {
               publicId: newPublicId,
               profileUrl: upload.url,
             },
-            { where: { id } }
+            { where: { id } },
           );
 
           unlink(path, (err) => {
@@ -223,7 +223,7 @@ export default {
     async user_enterVerificationCode(
       _: null,
       { verificationCode }: any,
-      context: any
+      context: any,
     ) {
       const me = checkAuth(context);
 
@@ -255,7 +255,7 @@ export default {
 
       const smsRes: any = await resendVerificationCode(
         user.id,
-        user.phoneNumber
+        user.phoneNumber,
       );
 
       const { status, data } = smsRes;
@@ -282,7 +282,7 @@ export default {
       if (user) {
         const smsRes: any = await resendVerificationCode(
           user.id,
-          user.phoneNumber
+          user.phoneNumber,
         );
 
         const { status, data } = smsRes;

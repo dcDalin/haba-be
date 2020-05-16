@@ -14,7 +14,7 @@ const generateToken = (user: any) => {
       phoneNumber,
     },
     JWT_SECRET!,
-    { expiresIn: '1d' }
+    { expiresIn: '1d' },
   );
 };
 

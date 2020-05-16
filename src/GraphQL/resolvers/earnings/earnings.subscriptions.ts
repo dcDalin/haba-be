@@ -14,7 +14,7 @@ export default {
           const me = checkAuth(context);
 
           return payload.earnings_transactonChange.id === me.id;
-        }
+        },
       ),
     },
   },

@@ -9,7 +9,7 @@ export default {
     async earnings_userEarnings(
       _: null,
       { limit = 10, cursor }: any,
-      context: any
+      context: any,
     ) {
       const me = checkAuth(context);
 
