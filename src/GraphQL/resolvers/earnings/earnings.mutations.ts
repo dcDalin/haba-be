@@ -1,6 +1,6 @@
 // import { mpesa } from '../../../utils/mpesa';
 import pubsub from '../pubSub';
-import accessEnv from '../../../helpers/accessEnv';
+// import accessEnv from '../../../helpers/accessEnv';
 import checkAuth from '../../../utils/checkAuth';
 import User from '../../../models/user.model';
 import sequelize from '../../../db/connection';
