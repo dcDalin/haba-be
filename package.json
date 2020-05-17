@@ -2,8 +2,8 @@
   "name": "habahaba-services",
   "version": "0.0.1",
   "engines": {
-    "node": "14.1.0",
-    "yarn": "1.22.4",
+    "node": "12.14.1",
+    "yarn": "1.19.1",
     "npm": "6.13.2"
   },
   "main": "index.ts",
