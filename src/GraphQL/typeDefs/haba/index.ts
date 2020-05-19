@@ -7,6 +7,7 @@ export default gql`
 
   extend type Mutation {
     haba_newHaba(habaNewInput: HabaNewInput!): Haba
+    haba_reply(habaId: String!, reply: String!): HabaResponse
   }
 
   extend type Subscription {
@@ -33,5 +34,10 @@ export default gql`
     fromMessage: String
     fromIsPrivate: Boolean
     fromAmount: Float
+  }
+
+  type HabaResponse {
+    status: String!
+    message: String!
   }
 `;

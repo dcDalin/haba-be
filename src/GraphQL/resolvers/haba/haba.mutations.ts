@@ -7,9 +7,41 @@ import Admin from '../../../models/admin.model';
 import UserTransaction from '../../../models/userTransaction.model';
 import AdminTransaction from '../../../models/adminTransaction.model';
 import { NEW_HABA, TRANSACTION_CHANGE } from '../types';
+import checkAuth from '../../../utils/checkAuth';
 
 export default {
   Mutation: {
+    async haba_reply(_: null, { habaId, reply }: any, context: any) {
+      const me = checkAuth(context);
+
+      const { id } = me;
+
+      const user = await User.findByPk(id);
+
+      if (!user) {
+        return {
+          status: 'failure',
+          message: 'An unknown error occured',
+        };
+      }
+
+      const haba = await Haba.findByPk(habaId);
+
+      if (!haba) {
+        return {
+          status: 'failure',
+          message: 'An unknown error occured',
+        };
+      }
+
+      haba.reply = reply;
+      await haba.save();
+
+      return {
+        status: 'success',
+        message: 'Reply has been updated',
+      };
+    },
     async haba_newHaba(
       _: null,
       {
@@ -77,14 +109,14 @@ export default {
         // Sanity check, case the admin cuts are are off!
         // Got to add up to amount received
         // TODO: Admin share always 0.9999999 fix it
-        // if (adminOneShare + adminTwoShare + adminThreeShare !== 1) {
-        //   console.log(adminOneShare + adminTwoShare + adminThreeShare);
-        //   console.log(1);
-        //   console.log('Reversing because admin cuts not 1');
-        //   reversal(mpesaCode, fromAmount);
+        if (adminOneShare + adminTwoShare + adminThreeShare !== 1) {
+          console.log(adminOneShare + adminTwoShare + adminThreeShare);
+          console.log(1);
+          console.log('Reversing because admin cuts not 1');
+          reversal(mpesaCode, fromAmount);
 
-        //   return 'error';
-        // }
+          return 'error';
+        }
 
         // Fetch user
         const userBal: any = await User.findByPk(userId);
