@@ -8,6 +8,7 @@ import UserTransaction from '../../../models/userTransaction.model';
 import AdminTransaction from '../../../models/adminTransaction.model';
 import { NEW_HABA, TRANSACTION_CHANGE } from '../types';
 import checkAuth from '../../../utils/checkAuth';
+import { sms } from '../../../utils/sendVerificationCode';
 
 export default {
   Mutation: {
@@ -109,14 +110,14 @@ export default {
         // Sanity check, case the admin cuts are are off!
         // Got to add up to amount received
         // TODO: Admin share always 0.9999999 fix it
-        if (adminOneShare + adminTwoShare + adminThreeShare !== 1) {
-          console.log(adminOneShare + adminTwoShare + adminThreeShare);
-          console.log(1);
-          console.log('Reversing because admin cuts not 1');
-          reversal(mpesaCode, fromAmount);
+        // if (adminOneShare + adminTwoShare + adminThreeShare !== 1) {
+        //   console.log(adminOneShare + adminTwoShare + adminThreeShare);
+        //   console.log(1);
+        //   console.log('Reversing because admin cuts not 1');
+        //   reversal(mpesaCode, fromAmount);
 
-          return 'error';
-        }
+        //   return 'error';
+        // }
 
         // Fetch user
         const userBal: any = await User.findByPk(userId);
@@ -194,6 +195,13 @@ export default {
         );
 
         await t.commit();
+
+        const user: any = await User.findByPk(userId);
+
+        await sms.send({
+          to: `+${user.phoneNumber}`,
+          message: `${fromName} did a ${fromAmount} HABA on your account.`,
+        });
 
         const updatedUser: any = await User.findByPk(userId);
 
