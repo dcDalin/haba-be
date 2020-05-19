@@ -78,6 +78,16 @@ export class Haba extends Model<Haba> {
   })
   fromNow!: string;
 
+  @Column({
+    type: DataType.VIRTUAL,
+    get() {
+      // @ts-ignore
+      const date = this.dataValues.updatedAt;
+      return moment(date).fromNow();
+    },
+  })
+  fromUpdate!: string;
+
   @BelongsTo(() => User)
   user!: User;
 }

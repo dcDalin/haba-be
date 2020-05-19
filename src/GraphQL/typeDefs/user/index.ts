@@ -79,6 +79,7 @@ export default gql`
     createdAt: String
     reply: String
     fromNow: String
+    fromUpdate: String
   }
 
   input UserSignUpInput {
