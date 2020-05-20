@@ -231,7 +231,7 @@ export default {
       } catch (err) {
         // Reverse the MPESA transaction
         console.log('Error caught, about to reverse pay');
-        reversal(mpesaCode, fromAmount);
+        // reversal(mpesaCode, fromAmount);
         return err;
       }
     },
