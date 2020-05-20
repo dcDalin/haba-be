@@ -198,9 +198,11 @@ export default {
 
         const user: any = await User.findByPk(userId);
 
+        const message = `${fromName} did a ${fromAmount} HABA on your account. Log in and say thank you.`;
+
         await sms.send({
+          message,
           to: `+${user.phoneNumber}`,
-          message: `${fromName} did a ${fromAmount} HABA on your account.`,
         });
 
         const updatedUser: any = await User.findByPk(userId);
