@@ -1,6 +1,6 @@
 import pubsub from '../pubSub';
 import sequelize from '../../../db/connection';
-import { reversal } from '../../../utils/mpesa';
+// import { reversal } from '../../../utils/mpesa';
 import Haba from '../../../models/haba.model';
 import User from '../../../models/user.model';
 import Admin from '../../../models/admin.model';
@@ -89,11 +89,11 @@ export default {
 
         // Sanity check, case the rates are off!
         // Got to add up to amount received
-        if (amountUserReceived + amountCompanyReceived !== amountReceived) {
-          console.log('Amount received not correct, about to reverse');
-          reversal(mpesaCode, fromAmount);
-          return 'error';
-        }
+        // if (amountUserReceived + amountCompanyReceived !== amountReceived) {
+        //   console.log('Amount received not correct, about to reverse');
+        //   reversal(mpesaCode, fromAmount);
+        //   return 'error';
+        // }
 
         const adminOnePhoneNumber = '254715973838';
         const adminTwoPhoneNumber = '254728600789';
