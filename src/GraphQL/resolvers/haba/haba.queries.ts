@@ -22,6 +22,7 @@ export default {
               model: userModel,
             },
           ],
+          order: [['createdAt', 'DESC']],
           limit: 20,
         });
         return res;
