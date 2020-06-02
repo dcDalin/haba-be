@@ -3,6 +3,7 @@ import { gql } from 'apollo-server-express';
 export default gql`
   extend type Query {
     haba_allHabas: [Haba!]!
+    haba_recentHabas: [RecentHaba]
   }
 
   extend type Mutation {
@@ -24,6 +25,22 @@ export default gql`
     fromAmount: Float
     createdAt: String
     fromNow: String
+  }
+
+  type RecentHaba {
+    id: ID
+    fromName: String
+    fromMessage: String
+    fromAmount: Float
+    reply: String
+    fromNow: String
+    fromUpdate: String
+    user: RecentHabaUser
+  }
+
+  type RecentHabaUser {
+    userName: String
+    profileUrl: String
   }
 
   input HabaNewInput {
